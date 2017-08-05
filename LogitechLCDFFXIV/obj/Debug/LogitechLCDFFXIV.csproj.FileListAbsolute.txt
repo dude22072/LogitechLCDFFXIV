@@ -1,0 +1,13 @@
+c:\users\josep\documents\visual studio 2017\Projects\LogitechLCDFFXIV\LogitechLCDFFXIV\bin\Debug\LogitechLCDFFXIV.exe.config
+c:\users\josep\documents\visual studio 2017\Projects\LogitechLCDFFXIV\LogitechLCDFFXIV\bin\Debug\LogitechLCDFFXIV.exe
+c:\users\josep\documents\visual studio 2017\Projects\LogitechLCDFFXIV\LogitechLCDFFXIV\bin\Debug\LogitechLCDFFXIV.pdb
+c:\users\josep\documents\visual studio 2017\Projects\LogitechLCDFFXIV\LogitechLCDFFXIV\obj\Debug\LogitechLCDFFXIV.csprojResolveAssemblyReference.cache
+c:\users\josep\documents\visual studio 2017\Projects\LogitechLCDFFXIV\LogitechLCDFFXIV\obj\Debug\LogitechLCDFFXIV.Form1.resources
+c:\users\josep\documents\visual studio 2017\Projects\LogitechLCDFFXIV\LogitechLCDFFXIV\obj\Debug\LogitechLCDFFXIV.Properties.Resources.resources
+c:\users\josep\documents\visual studio 2017\Projects\LogitechLCDFFXIV\LogitechLCDFFXIV\obj\Debug\LogitechLCDFFXIV.csproj.GenerateResource.Cache
+c:\users\josep\documents\visual studio 2017\Projects\LogitechLCDFFXIV\LogitechLCDFFXIV\obj\Debug\LogitechLCDFFXIV.exe
+c:\users\josep\documents\visual studio 2017\Projects\LogitechLCDFFXIV\LogitechLCDFFXIV\obj\Debug\LogitechLCDFFXIV.pdb
+c:\users\josep\documents\visual studio 2017\Projects\LogitechLCDFFXIV\LogitechLCDFFXIV\bin\Debug\Sharlayan.dll
+c:\users\josep\documents\visual studio 2017\Projects\LogitechLCDFFXIV\LogitechLCDFFXIV\bin\Debug\NLog.dll
+c:\users\josep\documents\visual studio 2017\Projects\LogitechLCDFFXIV\LogitechLCDFFXIV\bin\Debug\Sharlayan.pdb
+c:\users\josep\documents\visual studio 2017\Projects\LogitechLCDFFXIV\LogitechLCDFFXIV\bin\Debug\NLog.xml
