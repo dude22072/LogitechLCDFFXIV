@@ -142,7 +142,7 @@ namespace LogitechLCDFFXIV
             z = charInfo.stats.Z;
             title = charInfo.stats.Title;
 
-            /*EXP*/
+            #region EXP
             expGLD = player.GLD_CurrentEXP;
             expPGL = player.PGL_CurrentEXP;
             expMRD = player.MRD_CurrentEXP;
@@ -168,8 +168,8 @@ namespace LogitechLCDFFXIV
             expMCH = player.MCH_CurrentEXP;
             expSAM = 0;
             expRDM = 0;
-
-            /*Levels*/
+            #endregion
+            #region Levels
             levelGLD = player.GLD;
             levelPGL = player.PGL;
             levelMRD = player.MRD;
@@ -195,6 +195,7 @@ namespace LogitechLCDFFXIV
             levelMCH = player.MCH;
             levelSAM = 0;
             levelRDM = 0;
+            #endregion
         }
         private void timerUpdateLCD_Tick(object sender, EventArgs e)
         {
@@ -263,6 +264,7 @@ namespace LogitechLCDFFXIV
         {
             if (dispMode == -1) /*Initial Screen*/
             {
+                maxScrollIndex = 0;
                 LogitechLCD.LogiLcdMonoSetText(0, "");
                 LogitechLCD.LogiLcdMonoSetText(1, "     Final Fantasy XIV    ");
                 LogitechLCD.LogiLcdMonoSetText(2, "          Online          ");
@@ -280,6 +282,7 @@ namespace LogitechLCDFFXIV
             }
             else if (dispMode == 0) /*First Tab*/
             {
+                maxScrollIndex = 0;
                 //TODO:HP, MP, EXP
                 string name = first + " " + last;
                 LogitechLCD.LogiLcdMonoSetText(0, name.PadRight(21) + " " + Enum.GetName(typeof(Sharlayan.Core.Enums.Actor.Job), job) + level);
@@ -301,37 +304,26 @@ namespace LogitechLCDFFXIV
             }
             else if (dispMode == 1) /*Second Tab*/
             {
-                /*
-            levelACN = player.ACN;
-            levelCPT = player.CPT;
-            levelBSM = player.BSM;
-            levelARM = player.ARM;
-            levelGSM = player.GSM;
-            levelLTW = player.LTW;
-            levelWVR = player.WVR;
-            levelALC = player.ALC;
-            levelCUL = player.CUL;
-            levelMIN = player.MIN;
-            levelBTN = player.BTN;
-            levelFSH = player.FSH;
-            levelDRK = player.DRK;
-            levelAST = player.AST;
-            levelMCH = player.MCH;
-            levelSAM = 0;
-            levelRDM = 0;
-                */
+                maxScrollIndex = 4;
                 string row1 = "GLD" + levelGLD.ToString().PadLeft(2, '0') + "  PGL" + levelPGL.ToString().PadLeft(2, '0') + "  MRD" + levelMRD.ToString().PadLeft(2, '0') + "  LNC" + levelLNC.ToString().PadLeft(2, '0');
                 string row2 = "ARC" + levelARC.ToString().PadLeft(2, '0') + "  ROG" + levelROG.ToString().PadLeft(2, '0') + "  CNJ" + levelCNJ.ToString().PadLeft(2, '0') + "  THM" + levelTHM.ToString().PadLeft(2, '0');
+                string row3 = "ACN" + levelACN.ToString().PadLeft(2, '0') + "  CPT" + levelCPT.ToString().PadLeft(2, '0') + "  BSM" + levelBSM.ToString().PadLeft(2, '0') + "  ARM" + levelARM.ToString().PadLeft(2, '0');
+                string row4 = "GSM" + levelGSM.ToString().PadLeft(2, '0') + "  LTW" + levelLTW.ToString().PadLeft(2, '0') + "  WVR" + levelWVR.ToString().PadLeft(2, '0') + "  ALC" + levelALC.ToString().PadLeft(2, '0');
+                string row5 = "CUL" + levelCUL.ToString().PadLeft(2, '0') + "  MIN" + levelMIN.ToString().PadLeft(2, '0') + "  BTN" + levelBTN.ToString().PadLeft(2, '0') + "  FSH" + levelFSH.ToString().PadLeft(2, '0');
+                string row6 = "DRK" + levelDRK.ToString().PadLeft(2, '0') + "  AST" + levelAST.ToString().PadLeft(2, '0') + "  MCH" + levelMCH.ToString().PadLeft(2, '0') + "  SAM" + levelSAM.ToString().PadLeft(2, '0');
+                string row7 = "RDM" + levelRDM.ToString().PadLeft(2, '0');
 
-                String[] rows = new String[] { row1, row2, "", "" };
+
+                String[] rows = new String[] { row1, row2, row3, row4, row5, row6, row7 };
                 LogitechLCD.LogiLcdMonoSetText(0, rows[0+curentScrollIndex]);
                 LogitechLCD.LogiLcdMonoSetText(1, rows[1 + curentScrollIndex]);
                 LogitechLCD.LogiLcdMonoSetText(2, rows[2 + curentScrollIndex]);
-                LogitechLCD.LogiLcdMonoSetText(3, rows[3 + curentScrollIndex]);
+                LogitechLCD.LogiLcdMonoSetText(3, "");
                 LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundOneThreeFourButton);
             }
             else if (dispMode == 2) /*Third Tab*/
             {
+                maxScrollIndex = 0;
                 LogitechLCD.LogiLcdMonoSetText(0, "Tab 3");
                 LogitechLCD.LogiLcdMonoSetText(1, "");
                 LogitechLCD.LogiLcdMonoSetText(2, "");
@@ -340,35 +332,13 @@ namespace LogitechLCDFFXIV
             }
             else if (dispMode == 3) /*Fourth Tab*/
             {
+                maxScrollIndex = 0;
                 LogitechLCD.LogiLcdMonoSetText(0, "Tab 4");
                 LogitechLCD.LogiLcdMonoSetText(1, "");
                 LogitechLCD.LogiLcdMonoSetText(2, "");
                 LogitechLCD.LogiLcdMonoSetText(3, "");
                 LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundOneButton);
             }
-            /*
-            else if (dispMode == 4) /*Tell Recived
-            {
-                LogitechLCD.LogiLcdMonoSetText(0, tellUser);
-                LogitechLCD.LogiLcdMonoSetText(1, tellMessage.Substring(0, tellMessage.Length));
-                if (tellMessage.Length > 26)
-                {
-                    LogitechLCD.LogiLcdMonoSetText(2, tellMessage.Substring(26, tellMessage.Length - 26));
-                }
-                else { LogitechLCD.LogiLcdMonoSetText(2, ""); }
-                if (tellMessage.Length > 53)
-                {
-                    LogitechLCD.LogiLcdMonoSetText(3, tellMessage.Substring(53, tellMessage.Length - 53));
-                }
-                else { LogitechLCD.LogiLcdMonoSetText(3, ""); }
-                LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundBlank);
-                returnDisplayTimer++;
-                if (returnDisplayTimer >= 50)
-                {
-                    returnDisplayTimer = 0;
-                    currentDisplayMode = previousDisplayMode;
-                }
-            }*/
         }
         private void timerAnimations_Tick(object sender, EventArgs e)
         {
