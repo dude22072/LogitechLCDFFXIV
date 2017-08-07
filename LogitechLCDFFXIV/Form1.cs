@@ -16,7 +16,7 @@ namespace LogitechLCDFFXIV
     public partial class Form1 : Form
     {
         Boolean dx11 = false, isDoingAnimation = false;
-        String first = "Butts", last = "McGee";
+        String first, last;
         private static FFXIV ffxiv;
         private FFXIV.Character charInfo;
         double currentHP, maxHP, currentMP, maxMP, currentTP, maxTP, currentCP, maxCP, currentGP, maxGP, expGLD, expPGL, expMRD, expLNC, expARC, expROG, expCNJ, expTHM, expACN, expCPT, expBSM, expARM, expGSM, expLTW, expWVR, expALC, expCUL, expMIN, expBTN, expFSH, expDRK, expAST, expMCH, expSAM, expRDM;
@@ -27,11 +27,9 @@ namespace LogitechLCDFFXIV
         /*other ints*/
         static int currentDisplayMode = -1, maxDisplayMode = 3, curentScrollIndex = 0, maxScrollIndex = 0;
 
-        Image image = Image.FromFile("G710Device.tiff");
-
         byte[] test = new byte[320 * 240 * 4];
 
-        public static double map(int x, int in_min, int in_max, int out_min, int out_max)
+        public static double map(double x, double in_min, double in_max, double out_min, double out_max)
         {
             return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
         }
@@ -50,11 +48,13 @@ namespace LogitechLCDFFXIV
 
             for (int iter = 0; iter < test.Length/4; iter++)
             {
-                test[4*iter + 0] = 128;
-                test[4*iter + 1] = 128;
-                test[4*iter + 2] = 128;
-                test[4*iter + 3] = 128;
+                test[4*iter + 0] = 255; //Blue
+                test[4*iter + 1] = 255; //Green
+                test[4*iter + 2] = 255; //Red
+                test[4*iter + 3] = 064; //Alpha
+                
             }
+            
         }
 
         private void Form1_OnClosing(object sender, FormClosingEventArgs e)
@@ -109,27 +109,22 @@ namespace LogitechLCDFFXIV
             }
         }
 
-        [System.Obsolete("Doesn't seem to work", true)]
         public static byte[] ImageToBGRA(Image imageIn)
         {
             Bitmap useme = new Bitmap(imageIn);
-            using (useme)
+            byte[] bgra = new byte[307200];
+            for (int y = 0; y < 240; y++)
             {
-                byte[] bgra = new byte[320 * 240 * 4];
                 for (int x = 0; x < 320; x++)
                 {
-                    for (int y = 0; y < 240; y++)
-                    {
-                        Color pxl = useme.GetPixel(x, y);
-                        bgra[(x * y) + 0] = pxl.B;
-                        bgra[(x * y) + 1] = pxl.G;
-                        bgra[(x * y) + 2] = pxl.R;
-                        bgra[(x * y) + 3] = 255; //noalpha
-                    }
+                    Color pxl = useme.GetPixel(x, y);
+                    bgra[(y * (320*4)) + x*4 + 0] = pxl.B;
+                    bgra[(y * (320*4)) + x*4 + 1] = pxl.G;
+                    bgra[(y * (320*4)) + x*4 + 2] = pxl.R;
+                    bgra[(y * (320*4)) + x*4 + 3] = pxl.A;
                 }
-
-                return bgra;
             }
+            return bgra;
         }
 
         private void btnMono_Click(object sender, EventArgs e)
@@ -254,6 +249,299 @@ namespace LogitechLCDFFXIV
             levelRDM = 0;
             #endregion
         }
+
+        private double barLengthGenerator(double current, double max)
+        {
+            //0, 311
+            return map(current, 0, max, 0, 311);
+        }
+        /// <summary>
+        /// Generate the HP, MP/CP/GP, and TP bars
+        /// </summary>
+        /// <param name="type">0=MP, 1=CP, 2=GP</param>
+        private void generateStatusBars(int type)
+        {
+            Image tab1 = Image.FromFile("res/tab1.png");
+            byte[] modify = ImageToBGRA(tab1);
+            //Hp Bar
+            //2, 69, 78
+            //23.186.148
+            //32.234.173
+            //23.214.153///
+            //1.171.113
+            //39.186.122
+            //0.73.42
+            //5, 94+
+            double hpLength = barLengthGenerator(currentHP, maxHP);
+            for (int x = 0; x<hpLength; x++)
+            {
+                int start = 5 * 4 + 94 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 2;
+                modify[(start + (4 * x)) + 1] = 69;
+                modify[(start + (4 * x)) + 2] = 78;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 95 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 2;
+                modify[(start + (4 * x)) + 1] = 69;
+                modify[(start + (4 * x)) + 2] = 78;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 96 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 23;
+                modify[(start + (4 * x)) + 1] = 186;
+                modify[(start + (4 * x)) + 2] = 148;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 97 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 23;
+                modify[(start + (4 * x)) + 1] = 186;
+                modify[(start + (4 * x)) + 2] = 148;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 98 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 32;
+                modify[(start + (4 * x)) + 1] = 234;
+                modify[(start + (4 * x)) + 2] = 173;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 99 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 32;
+                modify[(start + (4 * x)) + 1] = 234;
+                modify[(start + (4 * x)) + 2] = 173;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 100 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 23;
+                modify[(start + (4 * x)) + 1] = 214;
+                modify[(start + (4 * x)) + 2] = 153;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 101 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 23;
+                modify[(start + (4 * x)) + 1] = 214;
+                modify[(start + (4 * x)) + 2] = 153;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 102 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 23;
+                modify[(start + (4 * x)) + 1] = 214;
+                modify[(start + (4 * x)) + 2] = 153;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 103 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 1;
+                modify[(start + (4 * x)) + 1] = 171;
+                modify[(start + (4 * x)) + 2] = 113;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 104 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 1;
+                modify[(start + (4 * x)) + 1] = 171;
+                modify[(start + (4 * x)) + 2] = 113;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 105 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 39;
+                modify[(start + (4 * x)) + 1] = 186;
+                modify[(start + (4 * x)) + 2] = 122;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 106 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 39;
+                modify[(start + (4 * x)) + 1] = 183;
+                modify[(start + (4 * x)) + 2] = 122;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 107 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 0;
+                modify[(start + (4 * x)) + 1] = 73;
+                modify[(start + (4 * x)) + 2] = 42;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 108 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 0;
+                modify[(start + (4 * x)) + 1] = 73;
+                modify[(start + (4 * x)) + 2] = 42;
+                modify[(start + (4 * x)) + 3] = 255;
+            }
+            //TP Bar
+            //0.68.90
+            //20.179.199
+            //24.220.244
+            //21.203.233///
+            //0.160.192
+            //42.165.193
+            //0.63.85
+            //5,190+
+            double tpLength = barLengthGenerator(currentTP, maxTP);
+            for (int x = 0; x < tpLength; x++)
+            {
+                int start = 5 * 4 + 190 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 0;
+                modify[(start + (4 * x)) + 1] = 68;
+                modify[(start + (4 * x)) + 2] = 90;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 191 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 0;
+                modify[(start + (4 * x)) + 1] = 68;
+                modify[(start + (4 * x)) + 2] = 90;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 192 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 20;
+                modify[(start + (4 * x)) + 1] = 179;
+                modify[(start + (4 * x)) + 2] = 199;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 193 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 20;
+                modify[(start + (4 * x)) + 1] = 179;
+                modify[(start + (4 * x)) + 2] = 199;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 194 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 24;
+                modify[(start + (4 * x)) + 1] = 220;
+                modify[(start + (4 * x)) + 2] = 244;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 195 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 24;
+                modify[(start + (4 * x)) + 1] = 220;
+                modify[(start + (4 * x)) + 2] = 244;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 196 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 21;
+                modify[(start + (4 * x)) + 1] = 203;
+                modify[(start + (4 * x)) + 2] = 233;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 197 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 21;
+                modify[(start + (4 * x)) + 1] = 203;
+                modify[(start + (4 * x)) + 2] = 233;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 198 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 21;
+                modify[(start + (4 * x)) + 1] = 203;
+                modify[(start + (4 * x)) + 2] = 233;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 199 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 0;
+                modify[(start + (4 * x)) + 1] = 160;
+                modify[(start + (4 * x)) + 2] = 192;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 201 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 0;
+                modify[(start + (4 * x)) + 1] = 160;
+                modify[(start + (4 * x)) + 2] = 192;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 202 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 42;
+                modify[(start + (4 * x)) + 1] = 165;
+                modify[(start + (4 * x)) + 2] = 193;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 203 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 42;
+                modify[(start + (4 * x)) + 1] = 165;
+                modify[(start + (4 * x)) + 2] = 192;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 204 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 0;
+                modify[(start + (4 * x)) + 1] = 63;
+                modify[(start + (4 * x)) + 2] = 85;
+                modify[(start + (4 * x)) + 3] = 255;
+                start = 5 * 4 + 205 * 4 * 320;
+                modify[(start + (4 * x)) + 0] = 0;
+                modify[(start + (4 * x)) + 1] = 63;
+                modify[(start + (4 * x)) + 2] = 85;
+                modify[(start + (4 * x)) + 3] = 255;
+            }
+            if (type == 0)
+            {
+                //MP Bar
+                //28, 42, 92, 255
+                //129, 88, 180, 255
+                //166, 109, 224, 255
+                //141, 77, 206, 255
+                //105, 49, 162, 255
+                //109, 57, 151, 255
+                //47, 19, 89, 255
+                //5,141+
+                double mpLength = barLengthGenerator(currentMP, maxMP);
+                for (int x = 0; x < mpLength; x++)
+                {
+                    int start = 5 * 4 + 141 * 4 * 320;
+                    modify[(start + (4 * x)) + 0] = 28;
+                    modify[(start + (4 * x)) + 1] = 42;
+                    modify[(start + (4 * x)) + 2] = 92;
+                    modify[(start + (4 * x)) + 3] = 255;
+                    start = 5 * 4 + 142 * 4 * 320;
+                    modify[(start + (4 * x)) + 0] = 28;
+                    modify[(start + (4 * x)) + 1] = 42;
+                    modify[(start + (4 * x)) + 2] = 92;
+                    modify[(start + (4 * x)) + 3] = 255;
+                    start = 5 * 4 + 143 * 4 * 320;
+                    modify[(start + (4 * x)) + 0] = 129;
+                    modify[(start + (4 * x)) + 1] = 88;
+                    modify[(start + (4 * x)) + 2] = 180;
+                    modify[(start + (4 * x)) + 3] = 255;
+                    start = 5 * 4 + 144 * 4 * 320;
+                    modify[(start + (4 * x)) + 0] = 129;
+                    modify[(start + (4 * x)) + 1] = 88;
+                    modify[(start + (4 * x)) + 2] = 180;
+                    modify[(start + (4 * x)) + 3] = 255;
+                    start = 5 * 4 + 145 * 4 * 320;
+                    modify[(start + (4 * x)) + 0] = 166;
+                    modify[(start + (4 * x)) + 1] = 109;
+                    modify[(start + (4 * x)) + 2] = 224;
+                    modify[(start + (4 * x)) + 3] = 255;
+                    start = 5 * 4 + 146 * 4 * 320;
+                    modify[(start + (4 * x)) + 0] = 166;
+                    modify[(start + (4 * x)) + 1] = 109;
+                    modify[(start + (4 * x)) + 2] = 224;
+                    modify[(start + (4 * x)) + 3] = 255;
+                    start = 5 * 4 + 147 * 4 * 320;
+                    modify[(start + (4 * x)) + 0] = 141;
+                    modify[(start + (4 * x)) + 1] = 77;
+                    modify[(start + (4 * x)) + 2] = 206;
+                    modify[(start + (4 * x)) + 3] = 255;
+                    start = 5 * 4 + 148 * 4 * 320;
+                    modify[(start + (4 * x)) + 0] = 141;
+                    modify[(start + (4 * x)) + 1] = 77;
+                    modify[(start + (4 * x)) + 2] = 206;
+                    modify[(start + (4 * x)) + 3] = 255;
+                    start = 5 * 4 + 149 * 4 * 320;
+                    modify[(start + (4 * x)) + 0] = 141;
+                    modify[(start + (4 * x)) + 1] = 77;
+                    modify[(start + (4 * x)) + 2] = 206;
+                    modify[(start + (4 * x)) + 3] = 255;
+                    start = 5 * 4 + 150 * 4 * 320;
+                    modify[(start + (4 * x)) + 0] = 105;
+                    modify[(start + (4 * x)) + 1] = 49;
+                    modify[(start + (4 * x)) + 2] = 162;
+                    modify[(start + (4 * x)) + 3] = 255;
+                    start = 5 * 4 + 151 * 4 * 320;
+                    modify[(start + (4 * x)) + 0] = 105;
+                    modify[(start + (4 * x)) + 1] = 49;
+                    modify[(start + (4 * x)) + 2] = 162;
+                    modify[(start + (4 * x)) + 3] = 255;
+                    start = 5 * 4 + 152 * 4 * 320;
+                    modify[(start + (4 * x)) + 0] = 109;
+                    modify[(start + (4 * x)) + 1] = 57;
+                    modify[(start + (4 * x)) + 2] = 151;
+                    modify[(start + (4 * x)) + 3] = 255;
+                    start = 5 * 4 + 153 * 4 * 320;
+                    modify[(start + (4 * x)) + 0] = 109;
+                    modify[(start + (4 * x)) + 1] = 57;
+                    modify[(start + (4 * x)) + 2] = 151;
+                    modify[(start + (4 * x)) + 3] = 255;
+                    start = 5 * 4 + 154 * 4 * 320;
+                    modify[(start + (4 * x)) + 0] = 47;
+                    modify[(start + (4 * x)) + 1] = 19;
+                    modify[(start + (4 * x)) + 2] = 89;
+                    modify[(start + (4 * x)) + 3] = 255;
+                    start = 5 * 4 + 155 * 4 * 320;
+                    modify[(start + (4 * x)) + 0] = 47;
+                    modify[(start + (4 * x)) + 1] = 19;
+                    modify[(start + (4 * x)) + 2] = 89;
+                    modify[(start + (4 * x)) + 3] = 255;
+                }
+            }
+            else if (type==1)
+            {
+
+            }
+            else if (type==2)
+            {
+
+            }
+
+            LogitechLCD.LogiLcdColorSetBackground(modify);
+        }
+
         private void timerUpdateLCD_Tick(object sender, EventArgs e)
         {
             if (LogitechLCD.LogiLcdIsConnected(LogitechLCD.LcdType.Mono) || LogitechLCD.LogiLcdIsConnected(LogitechLCD.LcdType.Color))
@@ -270,6 +558,17 @@ namespace LogitechLCDFFXIV
                         LogitechLCD.LogiLcdMonoSetText(2, "          " + Enum.GetName(typeof(Sharlayan.Core.Enums.Actor.Job), job) + " " + level +  "          ");
                         LogitechLCD.LogiLcdMonoSetText(3, "                          ");
                         LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundBlank);
+
+                        LogitechLCD.LogiLcdColorSetText(0, "Tab 3");
+                        LogitechLCD.LogiLcdColorSetText(1, "");
+                        LogitechLCD.LogiLcdColorSetText(2, "         Level Up!          ");
+                        LogitechLCD.LogiLcdColorSetText(3, "");
+                        LogitechLCD.LogiLcdColorSetText(4, "");
+                        LogitechLCD.LogiLcdColorSetText(5, "");
+                        LogitechLCD.LogiLcdColorSetText(6, "");
+                        LogitechLCD.LogiLcdColorSetText(7, "");
+                        LogitechLCD.LogiLcdColorSetBackground(test);
+
                         timerAnimations.Start();
                     }
                     
@@ -287,6 +586,17 @@ namespace LogitechLCDFFXIV
                         LogitechLCD.LogiLcdMonoSetText(2, "           " + Enum.GetName(typeof(Sharlayan.Core.Enums.Actor.Job), job) + "            ");
                         LogitechLCD.LogiLcdMonoSetText(3, "                          ");
                         LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundBlank);
+
+                        LogitechLCD.LogiLcdColorSetText(0, "");
+                        LogitechLCD.LogiLcdColorSetText(1, "");
+                        LogitechLCD.LogiLcdColorSetText(2, "         Job Change         ");
+                        LogitechLCD.LogiLcdColorSetText(3, "");
+                        LogitechLCD.LogiLcdColorSetText(4, "            " + Enum.GetName(typeof(Sharlayan.Core.Enums.Actor.Job), job)  + "             ");
+                        LogitechLCD.LogiLcdColorSetText(5, "");
+                        LogitechLCD.LogiLcdColorSetText(6, "");
+                        LogitechLCD.LogiLcdColorSetText(7, "");
+                        LogitechLCD.LogiLcdColorSetBackground(test);
+
                         timerAnimations.Start();
                     }
                 }
@@ -325,7 +635,7 @@ namespace LogitechLCDFFXIV
         private void updateCurrentDisplay(int dispMode)
         {
             LogitechLCD.LogiLcdColorSetBackground(test);
-            LogitechLCD.LogiLcdColorSetTitle("Final Fantasy XIV", 0, 0, 0);
+            LogitechLCD.LogiLcdColorSetTitle("Final Fantasy XIV");
             if (dispMode == -1) /*Initial Screen*/
             {
                 maxScrollIndex = 0;
@@ -335,8 +645,8 @@ namespace LogitechLCDFFXIV
 
                 LogitechLCD.LogiLcdColorSetText(0, "");
                 LogitechLCD.LogiLcdColorSetText(1, "");
-                LogitechLCD.LogiLcdColorSetText(2, "     Final Fantasy XIV    ");
-                LogitechLCD.LogiLcdColorSetText(3, "          Online          ");
+                LogitechLCD.LogiLcdColorSetText(2, "      Final Fantasy XIV     ");
+                LogitechLCD.LogiLcdColorSetText(3, "           Online           ");
                 LogitechLCD.LogiLcdColorSetText(4, "");
                 LogitechLCD.LogiLcdColorSetText(5, "");
                 LogitechLCD.LogiLcdColorSetText(6, "");
@@ -344,7 +654,7 @@ namespace LogitechLCDFFXIV
                 if (btnConnect.Enabled)
                 {
                     LogitechLCD.LogiLcdMonoSetText(3,  "   Awaiting Connection... ");
-                    LogitechLCD.LogiLcdColorSetText(7, "   Awaiting Connection... ");
+                    LogitechLCD.LogiLcdColorSetText(7, "    Awaiting Connection...  ");
                     LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundBlank);
                     
                 }
@@ -359,7 +669,7 @@ namespace LogitechLCDFFXIV
             else if (dispMode == 0) /*First Tab*/
             {
                 maxScrollIndex = 0;
-                //TODO:HP, MP, EXP
+
                 string name = first + " " + last;
                 LogitechLCD.LogiLcdMonoSetText(0, name.PadRight(21) + " " + Enum.GetName(typeof(Sharlayan.Core.Enums.Actor.Job), job) + level);
                 LogitechLCD.LogiLcdMonoSetText(1, "HP: " + currentHP + "/" + maxHP);
@@ -385,19 +695,23 @@ namespace LogitechLCDFFXIV
                 if (job == 16 || job == 17 || job == 18)
                 {
                     LogitechLCD.LogiLcdColorSetText(3, "GP: " + currentGP + "/" + maxGP);
+                    generateStatusBars(2);
                 }
                 else if (job >= 8 && job <= 15)
                 {
                     LogitechLCD.LogiLcdColorSetText(3, "CP: " + currentCP + "/" + maxCP);
+                    generateStatusBars(1);
                 }
                 else
                 {
                     LogitechLCD.LogiLcdColorSetText(3, "MP: " + currentMP + "/" + maxMP);
+                    generateStatusBars(0);
                 }
                 LogitechLCD.LogiLcdColorSetText(4, "");
                 LogitechLCD.LogiLcdColorSetText(5, "TP: " + currentTP + "/" + maxTP);
                 LogitechLCD.LogiLcdColorSetText(6, "");
                 LogitechLCD.LogiLcdColorSetText(7, "");
+                
 
             }
             else if (dispMode == 1) /*Second Tab*/
