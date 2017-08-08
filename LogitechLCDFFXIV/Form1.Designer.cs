@@ -42,8 +42,6 @@
             this.cbTray = new System.Windows.Forms.CheckBox();
             this.timerUpdateLCD = new System.Windows.Forms.Timer(this.components);
             this.timerAnimations = new System.Windows.Forms.Timer(this.components);
-            this.btnMono = new System.Windows.Forms.Button();
-            this.btnColor = new System.Windows.Forms.Button();
             this.pnlDXVersion.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -142,7 +140,7 @@
             this.cbTray.AutoSize = true;
             this.cbTray.Checked = true;
             this.cbTray.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbTray.Location = new System.Drawing.Point(283, 148);
+            this.cbTray.Location = new System.Drawing.Point(9, 113);
             this.cbTray.Name = "cbTray";
             this.cbTray.Size = new System.Drawing.Size(144, 24);
             this.cbTray.TabIndex = 7;
@@ -159,33 +157,11 @@
             this.timerAnimations.Interval = 3000;
             this.timerAnimations.Tick += new System.EventHandler(this.timerAnimations_Tick);
             // 
-            // btnMono
-            // 
-            this.btnMono.Location = new System.Drawing.Point(12, 107);
-            this.btnMono.Name = "btnMono";
-            this.btnMono.Size = new System.Drawing.Size(90, 35);
-            this.btnMono.TabIndex = 9;
-            this.btnMono.Text = "Mono";
-            this.btnMono.UseVisualStyleBackColor = true;
-            this.btnMono.Click += new System.EventHandler(this.btnMono_Click);
-            // 
-            // btnColor
-            // 
-            this.btnColor.Location = new System.Drawing.Point(12, 148);
-            this.btnColor.Name = "btnColor";
-            this.btnColor.Size = new System.Drawing.Size(90, 35);
-            this.btnColor.TabIndex = 10;
-            this.btnColor.Text = "Color";
-            this.btnColor.UseVisualStyleBackColor = true;
-            this.btnColor.Click += new System.EventHandler(this.btnColor_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(455, 192);
-            this.Controls.Add(this.btnColor);
-            this.Controls.Add(this.btnMono);
+            this.ClientSize = new System.Drawing.Size(455, 156);
             this.Controls.Add(this.cbTray);
             this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.pnlDXVersion);
@@ -221,8 +197,6 @@
         private System.Windows.Forms.CheckBox cbTray;
         private System.Windows.Forms.Timer timerUpdateLCD;
         private System.Windows.Forms.Timer timerAnimations;
-        private System.Windows.Forms.Button btnMono;
-        private System.Windows.Forms.Button btnColor;
     }
 }
 
