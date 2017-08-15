@@ -179,8 +179,8 @@ namespace LogitechLCDFFXIV
             expDRK = player.DRK_CurrentEXP;
             expAST = player.AST_CurrentEXP;
             expMCH = player.MCH_CurrentEXP;
-            expSAM = 0;
-            expRDM = 0;
+            expSAM = player.SAM_CurrentEXP;
+            expRDM = player.RDM_CurrentEXP;
             #endregion
             #region Levels
             levelGLD = player.GLD;
@@ -206,8 +206,8 @@ namespace LogitechLCDFFXIV
             levelDRK = player.DRK;
             levelAST = player.AST;
             levelMCH = player.MCH;
-            levelSAM = 0;
-            levelRDM = 0;
+            levelSAM = player.SAM;
+            levelRDM = player.RDM;
             #endregion
         }
 
