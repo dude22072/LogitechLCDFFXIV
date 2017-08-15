@@ -230,6 +230,24 @@ namespace LogitechLCDFFXIV
             levelSAM = player.SAM;
             levelRDM = player.RDM;
             #endregion
+            //TODO
+            /*public short Tenacity { get; set; }
+        public short Defense { get; set; }
+        public short Control { get; set; }
+        public short Craftmanship { get; set; }
+        public short SpellSpeed { get; set; }
+        public short SkillSpeed { get; set; }
+        public short Determination { get; set; }
+        public short HealingMagicPotency { get; set; }
+        public short AttackMagicPotency { get; set; }
+        public short CriticalHitRate { get; set; }
+        public short DirectHit { get; set; }
+        public short AttackPower { get; set; }
+        public short MagicDefense { get; set; }
+        public short Evasion { get; set; }
+        public short Gathering { get; set; }
+        public short Perception { get; set; }
+            */
         }
 
         private void timerUpdateLCD_Tick(object sender, EventArgs e)
@@ -245,7 +263,7 @@ namespace LogitechLCDFFXIV
                         plevel = level;
 
                         /*Monochrome*/
-                        LogitechLCD.LogiLcdMonoSetText(0, "                          ");
+            LogitechLCD.LogiLcdMonoSetText(0, "                          ");
                         LogitechLCD.LogiLcdMonoSetText(1, "         Level Up!        ");
                         LogitechLCD.LogiLcdMonoSetText(2, "          " + Enum.GetName(typeof(Sharlayan.Core.Enums.Actor.Job), job) + " " + level +  "          ");
                         LogitechLCD.LogiLcdMonoSetText(3, "                          ");
@@ -390,7 +408,10 @@ namespace LogitechLCDFFXIV
                 }
                 else
                 {
-                    LogitechLCD.LogiLcdMonoSetText(2, "MP: " + currentMP + "/" + maxMP);
+                    string strMP = "MP: " + currentMP + "/" + maxMP, strTP = "TP: " + currentTP + "/" + maxTP;
+                    strMP = strMP.PadRight(13, ' ');
+                    strTP = strTP.PadLeft(13, ' ');
+                    LogitechLCD.LogiLcdMonoSetText(2, strMP + " " + strTP);
                 }
                 LogitechLCD.LogiLcdMonoSetText(3, "");
                 LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundFixed);
