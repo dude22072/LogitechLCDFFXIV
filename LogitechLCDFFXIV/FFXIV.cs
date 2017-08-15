@@ -58,20 +58,16 @@ namespace LogitechLCDFFXIV
 
         public class Character
         {
-            private string firstName;
-            private string lastName;
             private string fullName;
             public Sharlayan.Core.ActorEntity stats;
-            public Character(string firstName, string lastName)
+            public Character(string fullName)
             {
-                this.firstName = firstName;
-                this.lastName = lastName;
-                fullName = firstName + " " + lastName;
-                stats = CharStats(this.firstName, this.lastName);
+                this.fullName = fullName;
+                stats = CharStats(this.fullName);
             }
-            public Sharlayan.Core.ActorEntity CharStats(string firstName, string lastName)
+
+            public Sharlayan.Core.ActorEntity CharStats(string fullName)
             {
-                var fullName = firstName + " " + lastName;
                 ICollection<Sharlayan.Core.ActorEntity> PlayerInfo = Reader.GetActors()?.PCEntities?.Values;
                 foreach (var k in PlayerInfo)
                 {

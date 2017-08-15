@@ -22,10 +22,12 @@ namespace LogitechLCDFFXIV
         double currentHP, maxHP, currentMP, maxMP, currentTP, maxTP, currentCP, maxCP, currentGP, maxGP, expGLD, expPGL, expMRD, expLNC, expARC, expROG, expCNJ, expTHM, expACN, expCPT, expBSM, expARM, expGSM, expLTW, expWVR, expALC, expCUL, expMIN, expBTN, expFSH, expDRK, expAST, expMCH, expSAM, expRDM;
         byte job, pjob, level, plevel, title, levelGLD, levelPGL, levelMRD, levelLNC, levelARC, levelROG, levelCNJ, levelTHM, levelACN, levelCPT, levelBSM, levelARM, levelGSM, levelLTW, levelWVR, levelALC, levelCUL, levelMIN, levelBTN, levelFSH, levelDRK, levelAST, levelMCH, levelSAM, levelRDM;
         double x, y, z;
+        short STR, bSTR, DEX, bDEX, VIT, bVIT, INT, bINT, MND, bMND, PIE, bPIE, resWater, resLightning, resEarth, resWind, resIce, resFire, resBlunt, resPiercing, resSlashing;
+        System.Timers.Timer infoTimer;
         /*strings for when a tell is recived*/
         public static volatile string tellUser, tellMessage;
         /*other ints*/
-        static int currentDisplayMode = -1, maxDisplayMode = 3, curentScrollIndex = 0, maxScrollIndex = 0;
+        static int currentDisplayMode = -1, maxDisplayMode = 3, curentScrollIndex = 0, maxScrollIndex = 0, curentScrollIndexColor = 0, maxScrollIndexColor = 0;
 
         public static byte[] test = new byte[320 * 240 * 4];
 
@@ -102,25 +104,12 @@ namespace LogitechLCDFFXIV
             ffxiv = new FFXIV(dx11);
             if(ffxiv._initiated)
             {
-                charInfo = new FFXIV.Character(txtCharFirst.Text, txtCharLast.Text);
-                if (charInfo.stats != null)
-                {
                     btnConnect.Enabled = false;
-                    first = txtCharFirst.Text;
-                    last = txtCharLast.Text;
-                    txtCharFirst.Enabled = false;
-                    txtCharLast.Enabled = false;
-                    System.Timers.Timer infoTimer = new System.Timers.Timer();
+                    infoTimer = new System.Timers.Timer();
                     infoTimer.Elapsed += new System.Timers.ElapsedEventHandler(GetCharacterInfo);
                     infoTimer.Interval = 1000;
                     infoTimer.Enabled = true;
                     infoTimer.Start();
-                }
-                else
-                {
-                    MessageBox.Show("Could not find character \"" + txtCharFirst.Text + " " + txtCharLast.Text + "\".", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                
             }
             else
             {
@@ -129,9 +118,16 @@ namespace LogitechLCDFFXIV
         }
         private void GetCharacterInfo(object source, System.Timers.ElapsedEventArgs e)
         {
-            FFXIV.Character charInfo = new FFXIV.Character(first, last);
-            PlayerInfoReadResult readResult = Reader.GetPlayerInfo();
-            Sharlayan.Core.PlayerEntity player = readResult.PlayerEntity;
+            Sharlayan.Core.PlayerEntity player = Reader.GetPlayerInfo().PlayerEntity;
+            FFXIV.Character charInfo = new FFXIV.Character(player.Name);
+
+            if(charInfo == null)
+            {
+                MessageBox.Show("Could not find your player. Please make sure you're logged in.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                btnConnect.Enabled = true;
+                infoTimer.Stop();
+            }
+            
             InventoryReadResult readResultInv = Reader.GetInventoryItems();
             List<Sharlayan.Core.InventoryEntity> Inventories = readResultInv.InventoryEntities;
 #if DEBUG
@@ -155,6 +151,31 @@ namespace LogitechLCDFFXIV
             z = charInfo.stats.Z;
             title = charInfo.stats.Title;
 
+            #region Stats
+            STR = player.Strength;
+            bSTR = player.BaseStrength;
+            DEX = player.Dexterity;
+            bDEX = player.BaseDexterity;
+            VIT = player.Vitality;
+            bVIT = player.BaseVitality;
+            INT = player.Intelligence;
+            bINT = player.BaseIntelligence;
+            MND = player.Mind;
+            bMND = player.BaseMind;
+            PIE = player.Piety;
+            bPIE = player.BasePiety;
+            #endregion
+            #region Resistances
+            resWater = player.WaterResistance;
+            resLightning = player.LightningResistance;
+            resEarth = player.EarthResistance;
+            resWind = player.WindResistance;
+            resIce = player.IceResistance;
+            resFire = player.FireResistance;
+            resBlunt = player.BluntResistance;
+            resPiercing = player.PiercingResistance;
+            resSlashing = player.SlashingResistance;
+            #endregion
             #region EXP
             expGLD = player.GLD_CurrentEXP;
             expPGL = player.PGL_CurrentEXP;
@@ -283,27 +304,34 @@ namespace LogitechLCDFFXIV
 
                 LogitechLCD.LogiLcdUpdate();
             }
-            if (LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.MonoButton0) || LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.ColorRight))
-            {
-                if (currentDisplayMode < maxDisplayMode) { currentDisplayMode++; } else { currentDisplayMode = 0; }
-                curentScrollIndex = 0;
-            }
-            else if (LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.ColorLeft))
+            
+            if (LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.MonoButton0) || LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.ColorLeft))
             {
                 if (currentDisplayMode > 0) { currentDisplayMode--; } else { currentDisplayMode = maxDisplayMode; }
                 curentScrollIndex = 0;
+                curentScrollIndexColor = 0;
             }
-            else if (LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.MonoButton1))
+            else if (LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.MonoButton1) || LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.ColorRight))
             {
-
+                if (currentDisplayMode < maxDisplayMode) { currentDisplayMode++; } else { currentDisplayMode = 0; }
+                curentScrollIndex = 0;
+                curentScrollIndexColor = 0;
             }
-            else if (LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.MonoButton2) || LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.ColorUp))
+            else if (LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.MonoButton2))
             {
                 if (curentScrollIndex > 0) { curentScrollIndex--; }
             }
-            else if (LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.MonoButton3) || LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.ColorDown))
+            else if (LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.MonoButton3))
             {
                 if (curentScrollIndex < maxScrollIndex) { curentScrollIndex++; }
+            }
+            else if ( LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.ColorUp))
+            {
+                if (curentScrollIndexColor > 0) { curentScrollIndexColor--; }
+            }
+            else if (LogitechLCD.LogiLcdIsButtonPressed(LogitechLCD.Buttons.ColorDown))
+            {
+                if (curentScrollIndexColor < maxScrollIndexColor) { curentScrollIndexColor++; }
             }
         }
 
@@ -340,7 +368,7 @@ namespace LogitechLCDFFXIV
                 {
                     LogitechLCD.LogiLcdMonoSetText(3,  "");
                     LogitechLCD.LogiLcdColorSetText(7, "");
-                    LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundOneButton);
+                    LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundFixed);
                 }
                 
             }
@@ -365,9 +393,10 @@ namespace LogitechLCDFFXIV
                     LogitechLCD.LogiLcdMonoSetText(2, "MP: " + currentMP + "/" + maxMP);
                 }
                 LogitechLCD.LogiLcdMonoSetText(3, "");
-                LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundOneButton);
+                LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundFixed);
 
                 /*Color*/
+                maxScrollIndexColor = 0;
                 LogitechLCD.LogiLcdColorSetText(0, name.PadRight(23) + " " + Enum.GetName(typeof(Sharlayan.Core.Enums.Actor.Job), job) + level);
                 LogitechLCD.LogiLcdColorSetText(1, "HP: " + currentHP + "/" + maxHP);
                 LogitechLCD.LogiLcdColorSetText(2, "");
@@ -411,9 +440,10 @@ namespace LogitechLCDFFXIV
                 LogitechLCD.LogiLcdMonoSetText(1, rows[1 + curentScrollIndex]);
                 LogitechLCD.LogiLcdMonoSetText(2, rows[2 + curentScrollIndex]);
                 LogitechLCD.LogiLcdMonoSetText(3, "");
-                LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundOneThreeFourButton);
+                LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundScrollable);
 
                 /*Color*/
+                maxScrollIndexColor = 0;
                 LogitechLCD.LogiLcdColorSetText(0, rows[0]);
                 LogitechLCD.LogiLcdColorSetText(1, rows[1]);
                 LogitechLCD.LogiLcdColorSetText(2, rows[2]);
@@ -432,9 +462,10 @@ namespace LogitechLCDFFXIV
                 LogitechLCD.LogiLcdMonoSetText(1, "");
                 LogitechLCD.LogiLcdMonoSetText(2, "");
                 LogitechLCD.LogiLcdMonoSetText(3, "");
-                LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundOneButton);
+                LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundFixed);
 
                 /*Color*/
+                maxScrollIndexColor = 0;
                 LogitechLCD.LogiLcdColorSetText(0, "Tab 3");
                 LogitechLCD.LogiLcdColorSetText(1, "");
                 LogitechLCD.LogiLcdColorSetText(2, "");
@@ -453,9 +484,10 @@ namespace LogitechLCDFFXIV
                 LogitechLCD.LogiLcdMonoSetText(1, "");
                 LogitechLCD.LogiLcdMonoSetText(2, "");
                 LogitechLCD.LogiLcdMonoSetText(3, "");
-                LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundOneButton);
+                LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundFixed);
 
                 /*Color*/
+                maxScrollIndexColor = 0;
                 LogitechLCD.LogiLcdColorSetText(0, "Tab 4");
                 LogitechLCD.LogiLcdColorSetText(1, "");
                 LogitechLCD.LogiLcdColorSetText(2, "");

@@ -30,11 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.lblCharName = new System.Windows.Forms.Label();
-            this.lblCharFirst = new System.Windows.Forms.Label();
-            this.lblCharLast = new System.Windows.Forms.Label();
-            this.txtCharFirst = new System.Windows.Forms.TextBox();
-            this.txtCharLast = new System.Windows.Forms.TextBox();
             this.pnlDXVersion = new System.Windows.Forms.Panel();
             this.rbDX11 = new System.Windows.Forms.RadioButton();
             this.rbDX9 = new System.Windows.Forms.RadioButton();
@@ -51,52 +46,11 @@
             this.trayIcon.Visible = true;
             this.trayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.trayIcon_MouseDoubleClick);
             // 
-            // lblCharName
-            // 
-            this.lblCharName.AutoSize = true;
-            this.lblCharName.Location = new System.Drawing.Point(13, 13);
-            this.lblCharName.Name = "lblCharName";
-            this.lblCharName.Size = new System.Drawing.Size(140, 20);
-            this.lblCharName.TabIndex = 0;
-            this.lblCharName.Text = "Character\'s Name:";
-            // 
-            // lblCharFirst
-            // 
-            this.lblCharFirst.AutoSize = true;
-            this.lblCharFirst.Location = new System.Drawing.Point(32, 43);
-            this.lblCharFirst.Name = "lblCharFirst";
-            this.lblCharFirst.Size = new System.Drawing.Size(44, 20);
-            this.lblCharFirst.TabIndex = 1;
-            this.lblCharFirst.Text = "First:";
-            // 
-            // lblCharLast
-            // 
-            this.lblCharLast.AutoSize = true;
-            this.lblCharLast.Location = new System.Drawing.Point(32, 70);
-            this.lblCharLast.Name = "lblCharLast";
-            this.lblCharLast.Size = new System.Drawing.Size(44, 20);
-            this.lblCharLast.TabIndex = 2;
-            this.lblCharLast.Text = "Last:";
-            // 
-            // txtCharFirst
-            // 
-            this.txtCharFirst.Location = new System.Drawing.Point(82, 37);
-            this.txtCharFirst.Name = "txtCharFirst";
-            this.txtCharFirst.Size = new System.Drawing.Size(131, 26);
-            this.txtCharFirst.TabIndex = 3;
-            // 
-            // txtCharLast
-            // 
-            this.txtCharLast.Location = new System.Drawing.Point(82, 70);
-            this.txtCharLast.Name = "txtCharLast";
-            this.txtCharLast.Size = new System.Drawing.Size(131, 26);
-            this.txtCharLast.TabIndex = 4;
-            // 
             // pnlDXVersion
             // 
             this.pnlDXVersion.Controls.Add(this.rbDX11);
             this.pnlDXVersion.Controls.Add(this.rbDX9);
-            this.pnlDXVersion.Location = new System.Drawing.Point(268, 37);
+            this.pnlDXVersion.Location = new System.Drawing.Point(12, 12);
             this.pnlDXVersion.Name = "pnlDXVersion";
             this.pnlDXVersion.Size = new System.Drawing.Size(159, 36);
             this.pnlDXVersion.TabIndex = 5;
@@ -127,7 +81,7 @@
             // 
             // btnConnect
             // 
-            this.btnConnect.Location = new System.Drawing.Point(337, 107);
+            this.btnConnect.Location = new System.Drawing.Point(177, 13);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(90, 35);
             this.btnConnect.TabIndex = 6;
@@ -140,7 +94,7 @@
             this.cbTray.AutoSize = true;
             this.cbTray.Checked = true;
             this.cbTray.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbTray.Location = new System.Drawing.Point(9, 113);
+            this.cbTray.Location = new System.Drawing.Point(16, 54);
             this.cbTray.Name = "cbTray";
             this.cbTray.Size = new System.Drawing.Size(144, 24);
             this.cbTray.TabIndex = 7;
@@ -161,15 +115,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(455, 156);
+            this.ClientSize = new System.Drawing.Size(280, 99);
             this.Controls.Add(this.cbTray);
             this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.pnlDXVersion);
-            this.Controls.Add(this.txtCharLast);
-            this.Controls.Add(this.txtCharFirst);
-            this.Controls.Add(this.lblCharLast);
-            this.Controls.Add(this.lblCharFirst);
-            this.Controls.Add(this.lblCharName);
             this.Name = "Form1";
             this.Text = "Dude22072\'s FFXIV Logitech GamePanel App";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_OnClosing);
@@ -185,11 +134,6 @@
         #endregion
 
         public System.Windows.Forms.NotifyIcon trayIcon;
-        private System.Windows.Forms.Label lblCharName;
-        private System.Windows.Forms.Label lblCharFirst;
-        private System.Windows.Forms.Label lblCharLast;
-        private System.Windows.Forms.TextBox txtCharFirst;
-        private System.Windows.Forms.TextBox txtCharLast;
         private System.Windows.Forms.Panel pnlDXVersion;
         private System.Windows.Forms.RadioButton rbDX9;
         private System.Windows.Forms.RadioButton rbDX11;
