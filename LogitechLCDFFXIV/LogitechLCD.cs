@@ -1,4 +1,10 @@
-﻿using System;
+﻿/* Logitech Game Engines Wrapper
+ * c++ to c# conversion
+ * 
+ * Joseph M Keller
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Linq;
