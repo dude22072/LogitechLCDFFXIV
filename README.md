@@ -10,6 +10,6 @@ This applet uses Icehunter's sharlayan.dll to read from the game. If a patch is 
 The wrapper DLL from Logitech's offical c++ SDK.  
 Imported to c# through Logitech.cs  
   
-#Building
+# Building
 Build either x86 or x64 bassed upon your OS and Logitech Driver version, NOT bassed on DX9/DX11 FFXIV.  
 Withing the app itself there is a selctor for DX9/DX11.  
