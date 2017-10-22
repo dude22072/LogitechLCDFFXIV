@@ -16,20 +16,56 @@ namespace LogitechLCDFFXIV
     public partial class Form1 : Form
     {
         Boolean dx11 = false, isDoingAnimation = false;
-        String first, last;
+        int locale = 0;
+        String playerName = "TESTUSER";
         private static FFXIV ffxiv;
         private FFXIV.Character charInfo;
-        double currentHP, maxHP, currentMP, maxMP, currentTP, maxTP, currentCP, maxCP, currentGP, maxGP, expGLD, expPGL, expMRD, expLNC, expARC, expROG, expCNJ, expTHM, expACN, expCPT, expBSM, expARM, expGSM, expLTW, expWVR, expALC, expCUL, expMIN, expBTN, expFSH, expDRK, expAST, expMCH, expSAM, expRDM;
+        double currentHP = 10000, maxHP = 15000, currentMP = 10000, maxMP = 15000, currentTP = 1000, maxTP = 1000, currentCP, maxCP, currentGP, maxGP, expGLD, expPGL, expMRD, expLNC, expARC, expROG, expCNJ, expTHM, expACN, expCPT, expBSM, expARM, expGSM, expLTW, expWVR, expALC, expCUL, expMIN, expBTN, expFSH, expDRK, expAST, expMCH, expSAM, expRDM;
         byte job, pjob, level, plevel, title, levelGLD, levelPGL, levelMRD, levelLNC, levelARC, levelROG, levelCNJ, levelTHM, levelACN, levelCPT, levelBSM, levelARM, levelGSM, levelLTW, levelWVR, levelALC, levelCUL, levelMIN, levelBTN, levelFSH, levelDRK, levelAST, levelMCH, levelSAM, levelRDM;
         double x, y, z;
-        short STR, bSTR, DEX, bDEX, VIT, bVIT, INT, bINT, MND, bMND, PIE, bPIE, resWater, resLightning, resEarth, resWind, resIce, resFire, resBlunt, resPiercing, resSlashing;
+        short STR, bSTR, DEX, bDEX, VIT, bVIT, INT, bINT, MND, bMND, PIE, bPIE, resWater, resLightning, resEarth, resWind, resIce, resFire, resBlunt, resPiercing, resSlashing, statTenacity, statDefense, statControl, statSpellSpeed, statSkillSpeed, statDetermination, statHealingPotency, statAttackPotency, statCritRate, statDirectHit, statAttackPower, statMagicDefense, statEvasion, statGathering, statPerception;
         System.Timers.Timer infoTimer;
         /*strings for when a tell is recived*/
-        public static volatile string tellUser, tellMessage;
+        //public static volatile string tellUser, tellMessage;
         /*other ints*/
         static int currentDisplayMode = -1, maxDisplayMode = 3, curentScrollIndex = 0, maxScrollIndex = 0, curentScrollIndexColor = 0, maxScrollIndexColor = 0;
 
         public static byte[] test = new byte[320 * 240 * 4];
+
+        String[][] localization = {
+            new String[]{ "Minimise to tray", "トレイに最小化"},
+            new String[]{ "Connect", "コネクト" },
+            new String[]{ "Could not find FFXIV instance.", "インスタンスのFFXIVが見つかりませんでした。" },
+            new String[]{ "Could not find your player. Please make sure you're logged in.", ""},
+            new String[]{ "", ""}
+        };
+        String[][] jobLocalization = {
+            new String[]{ "GLD", "剣"},
+            new String[]{ "PGL", "格"},
+            new String[]{ "MRD", "斧"},
+            new String[]{ "LNC", "槍"},
+            new String[]{ "ARC", "弓"},
+            new String[]{ "ROG", "双"},
+            new String[]{ "CNJ", "幻"},
+            new String[]{ "THM", "呪"},
+            new String[]{ "ACN", "巴"},
+            new String[]{ "CPT", "木工師"},
+            new String[]{ "BSM", "鍛冶師"},
+            new String[]{ "ARM", "甲冑師"},
+            new String[]{ "GSM", "彫金師"},
+            new String[]{ "LTW", "革細工師"},
+            new String[]{ "WVR", "裁縫師"},
+            new String[]{ "ALC", "錬金術師"},
+            new String[]{ "CUL", "調理師"},
+            new String[]{ "MIN", "採掘師"},
+            new String[]{ "BTN", "園芸師"},
+            new String[]{ "FSH", "漁師"},
+            new String[]{ "DRK", "暗"},
+            new String[]{ "AST", "占"},
+            new String[]{ "MCH", "機"},
+            new String[]{ "SAM", "侍"},
+            new String[]{ "RDM", "赤"},
+        };
 
         public Form1()
         {
@@ -99,9 +135,27 @@ namespace LogitechLCDFFXIV
             dx11 = true;
         }
 
+        private void rbLangEnglish_CheckedChanged(object sender, EventArgs e)
+        {
+            locale = 0;
+            updateLocalization();
+        }
+
+        private void rbLangJapanese_CheckedChanged(object sender, EventArgs e)
+        {
+            locale = 1;
+            updateLocalization();
+        }
+
+        private void updateLocalization()
+        {
+            cbTray.Text = localization[0][locale];
+            btnConnect.Text = localization[1][locale];
+        }
+
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            ffxiv = new FFXIV(dx11);
+            ffxiv = new FFXIV(dx11, locale);
             if(ffxiv._initiated)
             {
                     btnConnect.Enabled = false;
@@ -113,17 +167,18 @@ namespace LogitechLCDFFXIV
             }
             else
             {
-                MessageBox.Show("Could not find FFXIV instance.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(localization[2][locale], this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
         private void GetCharacterInfo(object source, System.Timers.ElapsedEventArgs e)
         {
             Sharlayan.Core.PlayerEntity player = Reader.GetPlayerInfo().PlayerEntity;
-            FFXIV.Character charInfo = new FFXIV.Character(player.Name);
+            playerName = player.Name;
+            FFXIV.Character charInfo = new FFXIV.Character(playerName);
 
             if(charInfo == null)
             {
-                MessageBox.Show("Could not find your player. Please make sure you're logged in.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(localization[3][locale], this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 btnConnect.Enabled = true;
                 infoTimer.Stop();
             }
@@ -164,6 +219,22 @@ namespace LogitechLCDFFXIV
             bMND = player.BaseMind;
             PIE = player.Piety;
             bPIE = player.BasePiety;
+            //TODO
+            statTenacity = player.Tenacity;
+            statDefense = player.Defense;
+            statControl = player.Control;
+            statSpellSpeed = player.SpellSpeed;
+            statSkillSpeed = player.SkillSpeed;
+            statDetermination = player.Determination;
+            statHealingPotency = player.HealingMagicPotency;
+            statAttackPotency = player.AttackMagicPotency;
+            statCritRate = player.CriticalHitRate;
+            statDirectHit = player.DirectHit;
+            statAttackPower = player.AttackPower;
+            statMagicDefense = player.MagicDefense;
+            statEvasion = player.Evasion;
+            statGathering = player.Gathering;
+            statPerception = player.Perception;
             #endregion
             #region Resistances
             resWater = player.WaterResistance;
@@ -230,24 +301,7 @@ namespace LogitechLCDFFXIV
             levelSAM = player.SAM;
             levelRDM = player.RDM;
             #endregion
-            //TODO
-            /*public short Tenacity { get; set; }
-        public short Defense { get; set; }
-        public short Control { get; set; }
-        public short Craftmanship { get; set; }
-        public short SpellSpeed { get; set; }
-        public short SkillSpeed { get; set; }
-        public short Determination { get; set; }
-        public short HealingMagicPotency { get; set; }
-        public short AttackMagicPotency { get; set; }
-        public short CriticalHitRate { get; set; }
-        public short DirectHit { get; set; }
-        public short AttackPower { get; set; }
-        public short MagicDefense { get; set; }
-        public short Evasion { get; set; }
-        public short Gathering { get; set; }
-        public short Perception { get; set; }
-            */
+
         }
 
         private void timerUpdateLCD_Tick(object sender, EventArgs e)
@@ -263,7 +317,7 @@ namespace LogitechLCDFFXIV
                         plevel = level;
 
                         /*Monochrome*/
-            LogitechLCD.LogiLcdMonoSetText(0, "                          ");
+                        LogitechLCD.LogiLcdMonoSetText(0, "                          ");
                         LogitechLCD.LogiLcdMonoSetText(1, "         Level Up!        ");
                         LogitechLCD.LogiLcdMonoSetText(2, "          " + Enum.GetName(typeof(Sharlayan.Core.Enums.Actor.Job), job) + " " + level +  "          ");
                         LogitechLCD.LogiLcdMonoSetText(3, "                          ");
@@ -392,11 +446,10 @@ namespace LogitechLCDFFXIV
             }
             else if (dispMode == 0) /*First Tab*/
             {
-                string name = first + " " + last;
 
                 /*Monochrome*/
                 maxScrollIndex = 0;
-                LogitechLCD.LogiLcdMonoSetText(0, name.PadRight(21) + " " + Enum.GetName(typeof(Sharlayan.Core.Enums.Actor.Job), job) + level);
+                LogitechLCD.LogiLcdMonoSetText(0, playerName.PadRight(21) + " " + Enum.GetName(typeof(Sharlayan.Core.Enums.Actor.Job), job) + level);
                 LogitechLCD.LogiLcdMonoSetText(1, "HP: " + currentHP + "/" + maxHP);
                 if(job == 16 || job == 17 || job == 18)
                 {
@@ -408,9 +461,8 @@ namespace LogitechLCDFFXIV
                 }
                 else
                 {
-                    string strMP = "MP: " + currentMP + "/" + maxMP, strTP = "TP: " + currentTP + "/" + maxTP;
-                    strMP = strMP.PadRight(13, ' ');
-                    strTP = strTP.PadLeft(13, ' ');
+                    string strMP = "MP: " + currentMP + "/" + maxMP, strTP = "TP: " + currentTP;
+                    strMP = strMP.PadRight(18, ' ');
                     LogitechLCD.LogiLcdMonoSetText(2, strMP + " " + strTP);
                 }
                 LogitechLCD.LogiLcdMonoSetText(3, "");
@@ -418,7 +470,7 @@ namespace LogitechLCDFFXIV
 
                 /*Color*/
                 maxScrollIndexColor = 0;
-                LogitechLCD.LogiLcdColorSetText(0, name.PadRight(23) + " " + Enum.GetName(typeof(Sharlayan.Core.Enums.Actor.Job), job) + level);
+                LogitechLCD.LogiLcdColorSetText(0, playerName.PadRight(23) + " " + Enum.GetName(typeof(Sharlayan.Core.Enums.Actor.Job), job) + level);
                 LogitechLCD.LogiLcdColorSetText(1, "HP: " + currentHP + "/" + maxHP);
                 LogitechLCD.LogiLcdColorSetText(2, "");
                 if (job == 16 || job == 17 || job == 18)
@@ -445,15 +497,36 @@ namespace LogitechLCDFFXIV
             }
             else if (dispMode == 1) /*Second Tab*/
             {
-                String[] rows = new String[] {
-                    "GLD" + levelGLD.ToString().PadLeft(2, '0') + "  PGL" + levelPGL.ToString().PadLeft(2, '0') + "  MRD" + levelMRD.ToString().PadLeft(2, '0') + "  LNC" + levelLNC.ToString().PadLeft(2, '0'),
-                    "ARC" + levelARC.ToString().PadLeft(2, '0') + "  ROG" + levelROG.ToString().PadLeft(2, '0') + "  CNJ" + levelCNJ.ToString().PadLeft(2, '0') + "  THM" + levelTHM.ToString().PadLeft(2, '0'),
-                    "ACN" + levelACN.ToString().PadLeft(2, '0') + "  CPT" + levelCPT.ToString().PadLeft(2, '0') + "  BSM" + levelBSM.ToString().PadLeft(2, '0') + "  ARM" + levelARM.ToString().PadLeft(2, '0'),
-                    "GSM" + levelGSM.ToString().PadLeft(2, '0') + "  LTW" + levelLTW.ToString().PadLeft(2, '0') + "  WVR" + levelWVR.ToString().PadLeft(2, '0') + "  ALC" + levelALC.ToString().PadLeft(2, '0'),
-                    "CUL" + levelCUL.ToString().PadLeft(2, '0') + "  MIN" + levelMIN.ToString().PadLeft(2, '0') + "  BTN" + levelBTN.ToString().PadLeft(2, '0') + "  FSH" + levelFSH.ToString().PadLeft(2, '0'),
-                    "DRK" + levelDRK.ToString().PadLeft(2, '0') + "  AST" + levelAST.ToString().PadLeft(2, '0') + "  MCH" + levelMCH.ToString().PadLeft(2, '0') + "  SAM" + levelSAM.ToString().PadLeft(2, '0'),
-                    "RDM" + levelRDM.ToString().PadLeft(2, '0')
-                };
+                String[] rows;
+                switch(locale)
+                {
+                    case 0:
+                        rows = new String[] {
+                            jobLocalization[0][locale] + levelGLD.ToString().PadLeft(2, '0') + "  " + jobLocalization[1][locale] + levelPGL.ToString().PadLeft(2, '0') + "  " + jobLocalization[2][locale] + levelMRD.ToString().PadLeft(2, '0') + "  " + jobLocalization[3][locale] + levelLNC.ToString().PadLeft(2, '0'),
+                            jobLocalization[4][locale] + levelARC.ToString().PadLeft(2, '0') + "  " + jobLocalization[5][locale] + levelROG.ToString().PadLeft(2, '0') + "  " + jobLocalization[6][locale] + levelCNJ.ToString().PadLeft(2, '0') + "  " + jobLocalization[7][locale] + levelTHM.ToString().PadLeft(2, '0'),
+                            jobLocalization[8][locale] + levelACN.ToString().PadLeft(2, '0') + "  " + jobLocalization[9][locale] + levelCPT.ToString().PadLeft(2, '0') + "  " + jobLocalization[10][locale] + levelBSM.ToString().PadLeft(2, '0') + "  " + jobLocalization[0][locale] + levelARM.ToString().PadLeft(2, '0'),
+                            jobLocalization[12][locale] + levelGSM.ToString().PadLeft(2, '0') + "  " + jobLocalization[13][locale] + levelLTW.ToString().PadLeft(2, '0') + "  " + jobLocalization[14][locale] + levelWVR.ToString().PadLeft(2, '0') + "  " + jobLocalization[15][locale] + levelALC.ToString().PadLeft(2, '0'),
+                            jobLocalization[16][locale] + levelCUL.ToString().PadLeft(2, '0') + "  " + jobLocalization[17][locale] + levelMIN.ToString().PadLeft(2, '0') + "  " + jobLocalization[18][locale] + levelBTN.ToString().PadLeft(2, '0') + "  " + jobLocalization[19][locale] + levelFSH.ToString().PadLeft(2, '0'),
+                            jobLocalization[20][locale] + levelDRK.ToString().PadLeft(2, '0') + "  " + jobLocalization[21][locale] + levelAST.ToString().PadLeft(2, '0') + "  " + jobLocalization[22][locale] + levelMCH.ToString().PadLeft(2, '0') + "  " + jobLocalization[23][locale] + levelSAM.ToString().PadLeft(2, '0'),
+                            jobLocalization[24][locale] + levelRDM.ToString().PadLeft(2, '0')
+                        };
+                        break;
+                    case 1:
+                        rows = new String[] {
+                            jobLocalization[0][locale] + levelGLD.ToString().PadLeft(2, '0') + " " + jobLocalization[1][locale] + levelPGL.ToString().PadLeft(2, '0') + " " + jobLocalization[2][locale] + levelMRD.ToString().PadLeft(2, '0') + " " + jobLocalization[3][locale] + levelLNC.ToString().PadLeft(2, '0') + " " + jobLocalization[4][locale] + levelARC.ToString().PadLeft(2, '0'),
+                            jobLocalization[5][locale] + levelROG.ToString().PadLeft(2, '0') + " " + jobLocalization[6][locale] + levelCNJ.ToString().PadLeft(2, '0') + " " + jobLocalization[7][locale] + levelTHM.ToString().PadLeft(2, '0') + " " + jobLocalization[8][locale] + levelACN.ToString().PadLeft(2, '0') + " " + jobLocalization[20][locale] + levelDRK.ToString().PadLeft(2, '0'),
+                            jobLocalization[21][locale] + levelAST.ToString().PadLeft(2, '0') + " " +jobLocalization[22][locale] + levelMCH.ToString().PadLeft(2, '0') + " " + jobLocalization[23][locale] + levelSAM.ToString().PadLeft(2, '0') + " " + jobLocalization[24][locale] + levelRDM.ToString().PadLeft(2, '0'),
+                            jobLocalization[9][locale] + levelCPT.ToString().PadLeft(2, '0') + jobLocalization[10][locale] + levelBSM.ToString().PadLeft(2, '0') + jobLocalization[11][locale] + levelARM.ToString().PadLeft(2, '0'),
+                            jobLocalization[12][locale] + levelGSM.ToString().PadLeft(2, '0') + jobLocalization[13][locale] + levelLTW.ToString().PadLeft(2, '0') + jobLocalization[14][locale] + levelWVR.ToString().PadLeft(2, '0'),
+                            jobLocalization[15][locale] + levelALC.ToString().PadLeft(2, '0') + jobLocalization[16][locale] + levelCUL.ToString().PadLeft(2, '0') + jobLocalization[17][locale] + levelMIN.ToString().PadLeft(2, '0'),
+                            jobLocalization[18][locale] + levelBTN.ToString().PadLeft(2, '0') + jobLocalization[19][locale] + levelFSH.ToString().PadLeft(2, '0')
+                        };
+                        break;
+                    default:
+                        rows = new String[]{};
+                        break;
+                }
+                
 
                 /*Monochrome*/
                 maxScrollIndex = 4;
@@ -465,13 +538,13 @@ namespace LogitechLCDFFXIV
 
                 /*Color*/
                 maxScrollIndexColor = 0;
-                LogitechLCD.LogiLcdColorSetText(0, rows[0]);
-                LogitechLCD.LogiLcdColorSetText(1, rows[1]);
-                LogitechLCD.LogiLcdColorSetText(2, rows[2]);
-                LogitechLCD.LogiLcdColorSetText(3, rows[3]);
-                LogitechLCD.LogiLcdColorSetText(4, rows[4]);
-                LogitechLCD.LogiLcdColorSetText(5, rows[5]);
-                LogitechLCD.LogiLcdColorSetText(6, rows[6]);
+                LogitechLCD.LogiLcdColorSetText(0, " " + rows[0]);
+                LogitechLCD.LogiLcdColorSetText(1, " " + rows[1]);
+                LogitechLCD.LogiLcdColorSetText(2, " " + rows[2]);
+                LogitechLCD.LogiLcdColorSetText(3, " " + rows[3]);
+                LogitechLCD.LogiLcdColorSetText(4, " " + rows[4]);
+                LogitechLCD.LogiLcdColorSetText(5, " " + rows[5]);
+                LogitechLCD.LogiLcdColorSetText(6, " " + rows[6]);
                 LogitechLCD.LogiLcdColorSetText(7, "");
                 LogitechLCD.LogiLcdColorSetBackground(test);
             }

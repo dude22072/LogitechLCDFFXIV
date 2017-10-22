@@ -37,7 +37,11 @@
             this.cbTray = new System.Windows.Forms.CheckBox();
             this.timerUpdateLCD = new System.Windows.Forms.Timer(this.components);
             this.timerAnimations = new System.Windows.Forms.Timer(this.components);
+            this.pnlLanguage = new System.Windows.Forms.Panel();
+            this.rbLangEnglish = new System.Windows.Forms.RadioButton();
+            this.rbLangJapanese = new System.Windows.Forms.RadioButton();
             this.pnlDXVersion.SuspendLayout();
+            this.pnlLanguage.SuspendLayout();
             this.SuspendLayout();
             // 
             // trayIcon
@@ -50,17 +54,19 @@
             // 
             this.pnlDXVersion.Controls.Add(this.rbDX11);
             this.pnlDXVersion.Controls.Add(this.rbDX9);
-            this.pnlDXVersion.Location = new System.Drawing.Point(12, 12);
+            this.pnlDXVersion.Location = new System.Drawing.Point(8, 8);
+            this.pnlDXVersion.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pnlDXVersion.Name = "pnlDXVersion";
-            this.pnlDXVersion.Size = new System.Drawing.Size(159, 36);
+            this.pnlDXVersion.Size = new System.Drawing.Size(106, 23);
             this.pnlDXVersion.TabIndex = 5;
             // 
             // rbDX11
             // 
             this.rbDX11.AutoSize = true;
-            this.rbDX11.Location = new System.Drawing.Point(76, 4);
+            this.rbDX11.Location = new System.Drawing.Point(51, 3);
+            this.rbDX11.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rbDX11.Name = "rbDX11";
-            this.rbDX11.Size = new System.Drawing.Size(75, 24);
+            this.rbDX11.Size = new System.Drawing.Size(52, 17);
             this.rbDX11.TabIndex = 1;
             this.rbDX11.Text = "DX11";
             this.rbDX11.UseVisualStyleBackColor = true;
@@ -70,9 +76,10 @@
             // 
             this.rbDX9.AutoSize = true;
             this.rbDX9.Checked = true;
-            this.rbDX9.Location = new System.Drawing.Point(4, 4);
+            this.rbDX9.Location = new System.Drawing.Point(3, 3);
+            this.rbDX9.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rbDX9.Name = "rbDX9";
-            this.rbDX9.Size = new System.Drawing.Size(66, 24);
+            this.rbDX9.Size = new System.Drawing.Size(46, 17);
             this.rbDX9.TabIndex = 0;
             this.rbDX9.TabStop = true;
             this.rbDX9.Text = "DX9";
@@ -81,9 +88,10 @@
             // 
             // btnConnect
             // 
-            this.btnConnect.Location = new System.Drawing.Point(177, 13);
+            this.btnConnect.Location = new System.Drawing.Point(118, 8);
+            this.btnConnect.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(90, 35);
+            this.btnConnect.Size = new System.Drawing.Size(60, 23);
             this.btnConnect.TabIndex = 6;
             this.btnConnect.Text = "Connect";
             this.btnConnect.UseVisualStyleBackColor = true;
@@ -94,9 +102,10 @@
             this.cbTray.AutoSize = true;
             this.cbTray.Checked = true;
             this.cbTray.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbTray.Location = new System.Drawing.Point(16, 54);
+            this.cbTray.Location = new System.Drawing.Point(8, 70);
+            this.cbTray.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbTray.Name = "cbTray";
-            this.cbTray.Size = new System.Drawing.Size(144, 24);
+            this.cbTray.Size = new System.Drawing.Size(98, 17);
             this.cbTray.TabIndex = 7;
             this.cbTray.Text = "Minimize to tray";
             this.cbTray.UseVisualStyleBackColor = true;
@@ -111,14 +120,49 @@
             this.timerAnimations.Interval = 3000;
             this.timerAnimations.Tick += new System.EventHandler(this.timerAnimations_Tick);
             // 
+            // pnlLanguage
+            // 
+            this.pnlLanguage.Controls.Add(this.rbLangJapanese);
+            this.pnlLanguage.Controls.Add(this.rbLangEnglish);
+            this.pnlLanguage.Location = new System.Drawing.Point(8, 36);
+            this.pnlLanguage.Name = "pnlLanguage";
+            this.pnlLanguage.Size = new System.Drawing.Size(170, 29);
+            this.pnlLanguage.TabIndex = 8;
+            // 
+            // rbLangEnglish
+            // 
+            this.rbLangEnglish.AutoSize = true;
+            this.rbLangEnglish.Checked = true;
+            this.rbLangEnglish.Location = new System.Drawing.Point(4, 5);
+            this.rbLangEnglish.Name = "rbLangEnglish";
+            this.rbLangEnglish.Size = new System.Drawing.Size(59, 17);
+            this.rbLangEnglish.TabIndex = 0;
+            this.rbLangEnglish.TabStop = true;
+            this.rbLangEnglish.Text = "English";
+            this.rbLangEnglish.UseVisualStyleBackColor = true;
+            this.rbLangEnglish.CheckedChanged += new System.EventHandler(this.rbLangEnglish_CheckedChanged);
+            // 
+            // rbLangJapanese
+            // 
+            this.rbLangJapanese.AutoSize = true;
+            this.rbLangJapanese.Location = new System.Drawing.Point(69, 5);
+            this.rbLangJapanese.Name = "rbLangJapanese";
+            this.rbLangJapanese.Size = new System.Drawing.Size(61, 17);
+            this.rbLangJapanese.TabIndex = 1;
+            this.rbLangJapanese.Text = "日本語";
+            this.rbLangJapanese.UseVisualStyleBackColor = true;
+            this.rbLangJapanese.CheckedChanged += new System.EventHandler(this.rbLangJapanese_CheckedChanged);
+            // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(280, 99);
+            this.ClientSize = new System.Drawing.Size(187, 96);
+            this.Controls.Add(this.pnlLanguage);
             this.Controls.Add(this.cbTray);
             this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.pnlDXVersion);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "Form1";
             this.Text = "Dude22072\'s FFXIV Logitech GamePanel App";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_OnClosing);
@@ -126,6 +170,8 @@
             this.Resize += new System.EventHandler(this.Form1_Resize);
             this.pnlDXVersion.ResumeLayout(false);
             this.pnlDXVersion.PerformLayout();
+            this.pnlLanguage.ResumeLayout(false);
+            this.pnlLanguage.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -141,6 +187,9 @@
         private System.Windows.Forms.CheckBox cbTray;
         private System.Windows.Forms.Timer timerUpdateLCD;
         private System.Windows.Forms.Timer timerAnimations;
+        private System.Windows.Forms.Panel pnlLanguage;
+        private System.Windows.Forms.RadioButton rbLangJapanese;
+        private System.Windows.Forms.RadioButton rbLangEnglish;
     }
 }
 
