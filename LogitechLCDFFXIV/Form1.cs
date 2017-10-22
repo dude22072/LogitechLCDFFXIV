@@ -19,7 +19,6 @@ namespace LogitechLCDFFXIV
         int locale = 0;
         String playerName = "TESTUSER";
         private static FFXIV ffxiv;
-        private FFXIV.Character charInfo;
         double currentHP = 10000, maxHP = 15000, currentMP = 10000, maxMP = 15000, currentTP = 1000, maxTP = 1000, currentCP, maxCP, currentGP, maxGP, expGLD, expPGL, expMRD, expLNC, expARC, expROG, expCNJ, expTHM, expACN, expCPT, expBSM, expARM, expGSM, expLTW, expWVR, expALC, expCUL, expMIN, expBTN, expFSH, expDRK, expAST, expMCH, expSAM, expRDM;
         byte job, pjob, level, plevel, title, levelGLD, levelPGL, levelMRD, levelLNC, levelARC, levelROG, levelCNJ, levelTHM, levelACN, levelCPT, levelBSM, levelARM, levelGSM, levelLTW, levelWVR, levelALC, levelCUL, levelMIN, levelBTN, levelFSH, levelDRK, levelAST, levelMCH, levelSAM, levelRDM;
         double x, y, z;
@@ -28,16 +27,19 @@ namespace LogitechLCDFFXIV
         /*strings for when a tell is recived*/
         //public static volatile string tellUser, tellMessage;
         /*other ints*/
-        static int currentDisplayMode = -1, maxDisplayMode = 3, curentScrollIndex = 0, maxScrollIndex = 0, curentScrollIndexColor = 0, maxScrollIndexColor = 0;
+        static int currentDisplayMode = -1, maxDisplayMode = 3, curentScrollIndex = 0, maxScrollIndex = 0, curentScrollIndexColor = 0, maxScrollIndexColor = 0, currentBackground = 0;
 
-        public static byte[] test = new byte[320 * 240 * 4];
+        public static BGRAMap mainMap = new BGRAMap(320, 240, 255, 255, 255, 064);
+        
+        //public static byte[] test = new byte[320 * 240 * 4];
 
         String[][] localization = {
-            new String[]{ "Minimise to tray", "トレイに最小化"},
+            new String[]{ "Minimise to tray", "トレイに最小化" },
             new String[]{ "Connect", "コネクト" },
             new String[]{ "Could not find FFXIV instance.", "インスタンスのFFXIVが見つかりませんでした。" },
-            new String[]{ "Could not find your player. Please make sure you're logged in.", ""},
-            new String[]{ "", ""}
+            new String[]{ "Could not find your player. Please make sure you're logged in.", "" },
+            new String[]{ "Running in tray. Double click tray icon to maximize.", "" },
+            new String[]{ "res/ARR EN SMALL.png", "res/ARR JP SMALL.png"}
         };
         String[][] jobLocalization = {
             new String[]{ "GLD", "剣"},
@@ -79,17 +81,8 @@ namespace LogitechLCDFFXIV
             trayIcon.BalloonTipIcon = ToolTipIcon.Info;
             trayIcon.Icon = this.Icon;
 
+            mainMap.setMap(BGRATools.fillColorMap(mainMap.getMap().Length, 255, 255, 255, 065));
             LogitechLCD.LogiLcdInit("FFXIV", LogitechLCD.LcdType.Mono | LogitechLCD.LcdType.Color);
-
-            for (int iter = 0; iter < test.Length/4; iter++)
-            {
-                test[4*iter + 0] = 255; //Blue
-                test[4*iter + 1] = 255; //Green
-                test[4*iter + 2] = 255; //Red
-                test[4*iter + 3] = 064; //Alpha
-                
-            }
-            
         }
 
         private void Form1_OnClosing(object sender, FormClosingEventArgs e)
@@ -151,6 +144,8 @@ namespace LogitechLCDFFXIV
         {
             cbTray.Text = localization[0][locale];
             btnConnect.Text = localization[1][locale];
+            trayIcon.BalloonTipText = localization[4][locale];
+            updateBackground(0);
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
@@ -332,7 +327,7 @@ namespace LogitechLCDFFXIV
                         LogitechLCD.LogiLcdColorSetText(5, "");
                         LogitechLCD.LogiLcdColorSetText(6, "");
                         LogitechLCD.LogiLcdColorSetText(7, "");
-                        LogitechLCD.LogiLcdColorSetBackground(test);
+                        LogitechLCD.LogiLcdColorSetBackground(mainMap.getMap());
 
                         timerAnimations.Start();
                     }
@@ -363,7 +358,7 @@ namespace LogitechLCDFFXIV
                         LogitechLCD.LogiLcdColorSetText(5, "");
                         LogitechLCD.LogiLcdColorSetText(6, "");
                         LogitechLCD.LogiLcdColorSetText(7, "");
-                        LogitechLCD.LogiLcdColorSetBackground(test);
+                        LogitechLCD.LogiLcdColorSetBackground(mainMap.getMap());
 
                         timerAnimations.Start();
                     }
@@ -407,12 +402,32 @@ namespace LogitechLCDFFXIV
             }
         }
 
+        private void updateBackground(int bg)
+        {
+            if (currentBackground != bg)
+            {
+                switch(bg)
+                {
+                    case 0:
+                        mainMap.setMap(BGRATools.fillColorMap(mainMap.getMap().Length, 255, 255, 255, 065));
+                        currentBackground = 0;
+                        break;
+                    case 1:
+                        mainMap.setMap(BGRATools.drawToMap(mainMap.getMap(), 320, 240, new Bitmap(localization[5][locale]), 0, 75));
+                        currentBackground = 1;
+                        break;
+                    default: break;
+                }
+            }
+        }
+
         private void updateCurrentDisplay(int dispMode)
         {
-            LogitechLCD.LogiLcdColorSetBackground(test);
+            LogitechLCD.LogiLcdColorSetBackground(mainMap.getMap());
             LogitechLCD.LogiLcdColorSetTitle("Final Fantasy XIV");
             if (dispMode == -1) /*Initial Screen*/
             {
+                updateBackground(1);
                 /*Monochrome*/
                 maxScrollIndex = 0;
                 LogitechLCD.LogiLcdMonoSetText(0,  "");
@@ -422,12 +437,12 @@ namespace LogitechLCDFFXIV
                 /*Color*/
                 LogitechLCD.LogiLcdColorSetText(0, "");
                 LogitechLCD.LogiLcdColorSetText(1, "");
-                LogitechLCD.LogiLcdColorSetText(2, "      Final Fantasy XIV     ");
-                LogitechLCD.LogiLcdColorSetText(3, "           Online           ");
+                LogitechLCD.LogiLcdColorSetText(2, "");
+                LogitechLCD.LogiLcdColorSetText(3, "");
                 LogitechLCD.LogiLcdColorSetText(4, "");
                 LogitechLCD.LogiLcdColorSetText(5, "");
                 LogitechLCD.LogiLcdColorSetText(6, "");
-                LogitechLCD.LogiLcdColorSetBackground(test);
+                LogitechLCD.LogiLcdColorSetBackground(mainMap.getMap());
 
                 if (btnConnect.Enabled)
                 {
@@ -442,11 +457,11 @@ namespace LogitechLCDFFXIV
                     LogitechLCD.LogiLcdColorSetText(7, "");
                     LogitechLCD.LogiLcdMonoSetBackground(LogitechLCD.lcdBackroundFixed);
                 }
-                
+
             }
             else if (dispMode == 0) /*First Tab*/
             {
-
+                updateBackground(0);
                 /*Monochrome*/
                 maxScrollIndex = 0;
                 LogitechLCD.LogiLcdMonoSetText(0, playerName.PadRight(21) + " " + Enum.GetName(typeof(Sharlayan.Core.Enums.Actor.Job), job) + level);
@@ -492,11 +507,11 @@ namespace LogitechLCDFFXIV
                 LogitechLCD.LogiLcdColorSetText(5, "TP: " + currentTP + "/" + maxTP);
                 LogitechLCD.LogiLcdColorSetText(6, "");
                 LogitechLCD.LogiLcdColorSetText(7, "");
-                
 
             }
             else if (dispMode == 1) /*Second Tab*/
             {
+                updateBackground(0);
                 String[] rows;
                 switch(locale)
                 {
@@ -546,10 +561,13 @@ namespace LogitechLCDFFXIV
                 LogitechLCD.LogiLcdColorSetText(5, " " + rows[5]);
                 LogitechLCD.LogiLcdColorSetText(6, " " + rows[6]);
                 LogitechLCD.LogiLcdColorSetText(7, "");
-                LogitechLCD.LogiLcdColorSetBackground(test);
+                LogitechLCD.LogiLcdColorSetBackground(mainMap.getMap());
+
+
             }
             else if (dispMode == 2) /*Third Tab*/
             {
+                updateBackground(0);
                 /*Monochrome*/
                 maxScrollIndex = 0;
                 LogitechLCD.LogiLcdMonoSetText(0, "Tab 3");
@@ -568,10 +586,11 @@ namespace LogitechLCDFFXIV
                 LogitechLCD.LogiLcdColorSetText(5, "");
                 LogitechLCD.LogiLcdColorSetText(6, "");
                 LogitechLCD.LogiLcdColorSetText(7, "");
-                LogitechLCD.LogiLcdColorSetBackground(test);
+                LogitechLCD.LogiLcdColorSetBackground(mainMap.getMap());
             }
             else if (dispMode == 3) /*Fourth Tab*/
             {
+                updateBackground(0);
                 /*Monochrome*/
                 maxScrollIndex = 0;
                 LogitechLCD.LogiLcdMonoSetText(0, "Tab 4");
@@ -590,7 +609,7 @@ namespace LogitechLCDFFXIV
                 LogitechLCD.LogiLcdColorSetText(5, "");
                 LogitechLCD.LogiLcdColorSetText(6, "");
                 LogitechLCD.LogiLcdColorSetText(7, "");
-                LogitechLCD.LogiLcdColorSetBackground(test);
+                LogitechLCD.LogiLcdColorSetBackground(mainMap.getMap());
             }
         }
         private void timerAnimations_Tick(object sender, EventArgs e)

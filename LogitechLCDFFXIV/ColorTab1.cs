@@ -21,25 +21,6 @@ namespace LogitechLCDFFXIV
             return map(current, 0, max, 0, 311);
         }
 
-        [System.Obsolete("Unneeded", true)]
-        public static byte[] ImageToBGRA(System.Drawing.Image imageIn)
-        {
-            System.Drawing.Bitmap useme = new System.Drawing.Bitmap(imageIn);
-            byte[] bgra = new byte[307200];
-            for (int y = 0; y < 240; y++)
-            {
-                for (int x = 0; x < 320; x++)
-                {
-                    System.Drawing.Color pxl = useme.GetPixel(x, y);
-                    bgra[(y * (320 * 4)) + x * 4 + 0] = pxl.B;
-                    bgra[(y * (320 * 4)) + x * 4 + 1] = pxl.G;
-                    bgra[(y * (320 * 4)) + x * 4 + 2] = pxl.R;
-                    bgra[(y * (320 * 4)) + x * 4 + 3] = pxl.A;
-                }
-            }
-            return bgra;
-        }
-
         private static void generateMainBackground()
         {
             //5-6,92-315
@@ -663,7 +644,7 @@ namespace LogitechLCDFFXIV
 
         public static void drawTab1(int type, double currentType, double maxType, double currentHP, double maxHP, double currentTP, double maxTP)
         {
-            Form1.test.CopyTo(tab1, 0);
+            Form1.mainMap.getMap().CopyTo(tab1, 0);
             generateMainBackground();
             generateStatusBars(type, currentType, maxType, currentHP, maxHP, currentTP, maxTP);
             LogitechLCD.LogiLcdColorSetBackground(tab1);
