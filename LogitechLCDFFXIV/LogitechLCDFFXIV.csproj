@@ -96,7 +96,6 @@
     <Compile Include="BGRAMap.cs" />
     <Compile Include="BGRATools.cs" />
     <Compile Include="ColorTab1.cs" />
-    <Compile Include="FFXIV.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

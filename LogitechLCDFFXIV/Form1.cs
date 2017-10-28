@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Drawing;
-using System.IO;
-
 #if DEBUG
 using System.Diagnostics;
 #endif
@@ -16,22 +14,18 @@ namespace LogitechLCDFFXIV
     public partial class Form1 : Form
     {
         Boolean dx11 = false, isDoingAnimation = false;
+        //0 = English, 1 = Japanese, 2 = French, 3 = German, 4 = Korean, 5 = Chinese
         int locale = 0;
         String playerName = "TESTUSER";
-        private static FFXIV ffxiv;
         double currentHP = 10000, maxHP = 15000, currentMP = 10000, maxMP = 15000, currentTP = 1000, maxTP = 1000, currentCP, maxCP, currentGP, maxGP, expGLD, expPGL, expMRD, expLNC, expARC, expROG, expCNJ, expTHM, expACN, expCPT, expBSM, expARM, expGSM, expLTW, expWVR, expALC, expCUL, expMIN, expBTN, expFSH, expDRK, expAST, expMCH, expSAM, expRDM;
         byte job, pjob, level, plevel, title, levelGLD, levelPGL, levelMRD, levelLNC, levelARC, levelROG, levelCNJ, levelTHM, levelACN, levelCPT, levelBSM, levelARM, levelGSM, levelLTW, levelWVR, levelALC, levelCUL, levelMIN, levelBTN, levelFSH, levelDRK, levelAST, levelMCH, levelSAM, levelRDM;
         double x, y, z;
         short STR, bSTR, DEX, bDEX, VIT, bVIT, INT, bINT, MND, bMND, PIE, bPIE, resWater, resLightning, resEarth, resWind, resIce, resFire, resBlunt, resPiercing, resSlashing, statTenacity, statDefense, statControl, statSpellSpeed, statSkillSpeed, statDetermination, statHealingPotency, statAttackPotency, statCritRate, statDirectHit, statAttackPower, statMagicDefense, statEvasion, statGathering, statPerception;
         System.Timers.Timer infoTimer;
-        /*strings for when a tell is recived*/
-        //public static volatile string tellUser, tellMessage;
         /*other ints*/
         static int currentDisplayMode = -1, maxDisplayMode = 3, curentScrollIndex = 0, maxScrollIndex = 0, curentScrollIndexColor = 0, maxScrollIndexColor = 0, currentBackground = 0;
 
         public static BGRAMap mainMap = new BGRAMap(320, 240, 255, 255, 255, 064);
-        
-        //public static byte[] test = new byte[320 * 240 * 4];
 
         String[][] localization = {
             new String[]{ "Minimise to tray", "トレイに最小化" },
@@ -150,8 +144,7 @@ namespace LogitechLCDFFXIV
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            ffxiv = new FFXIV(dx11, locale);
-            if(ffxiv._initiated)
+            if(attachFFXIVProcess())
             {
                     btnConnect.Enabled = false;
                     infoTimer = new System.Timers.Timer();
@@ -165,138 +158,180 @@ namespace LogitechLCDFFXIV
                 MessageBox.Show(localization[2][locale], this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
+        private bool attachFFXIVProcess()
+        {
+            Process[] processes = Process.GetProcessesByName(dx11? "ffxiv_dx11" : "ffxiv");
+            if (processes.Length > 0)
+            {
+                Process process = processes[0];
+                ProcessModel processModel = new ProcessModel
+                {
+                    Process = process,
+                    IsWin64 = dx11
+                };
+                MemoryHandler.Instance.SetProcess(processModel, locale == 0 ? "English" : locale == 1 ? "Japanese" : locale == 2 ? "French" : locale == 3 ? "German" : locale == 4 ? "Korean" : locale == 5 ? "Chinese" : "");
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         private void GetCharacterInfo(object source, System.Timers.ElapsedEventArgs e)
         {
-            Sharlayan.Core.PlayerEntity player = Reader.GetPlayerInfo().PlayerEntity;
-            playerName = player.Name;
-            FFXIV.Character charInfo = new FFXIV.Character(playerName);
-
-            if(charInfo == null)
+            try
             {
-                MessageBox.Show(localization[3][locale], this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                btnConnect.Enabled = true;
-                infoTimer.Stop();
-            }
-            
-            InventoryReadResult readResultInv = Reader.GetInventoryItems();
-            List<Sharlayan.Core.InventoryEntity> Inventories = readResultInv.InventoryEntities;
+                Sharlayan.Core.PlayerEntity player = Reader.GetPlayerInfo().PlayerEntity;
+                Sharlayan.Core.ActorEntity charInfo = getPC();
+
+                if (charInfo == null)
+                {
+                    MessageBox.Show(localization[3][locale], this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    btnConnect.Enabled = true;
+                    infoTimer.Stop();
+                }
+
+                InventoryReadResult readResultInv = Reader.GetInventoryItems();
+                List<Sharlayan.Core.InventoryEntity> Inventories = readResultInv.InventoryEntities;
 #if DEBUG
-            Debug.WriteLine(Inventories.ToArray().Length.ToString());
-            Debug.WriteLine(Inventories.ToArray().ToString());
+                Debug.WriteLine(Inventories.ToArray().Length.ToString());
+                Debug.WriteLine(Inventories.ToArray().ToString());
 #endif
-            currentHP = charInfo.stats.HPCurrent;
-            maxHP = charInfo.stats.HPMax;
-            currentMP = charInfo.stats.MPCurrent;
-            maxMP = charInfo.stats.MPMax;
-            currentTP = charInfo.stats.TPCurrent;
-            maxTP = charInfo.stats.TPMax;
-            currentCP = charInfo.stats.CPCurrent;
-            maxCP = charInfo.stats.CPMax;
-            currentGP = charInfo.stats.GPCurrent;
-            maxGP = charInfo.stats.GPMax;
-            job = charInfo.stats.JobID;
-            level = charInfo.stats.Level;
-            x = charInfo.stats.X;
-            y = charInfo.stats.Y;
-            z = charInfo.stats.Z;
-            title = charInfo.stats.Title;
+                currentHP = charInfo.HPCurrent;
+                maxHP = charInfo.HPMax;
+                currentMP = charInfo.MPCurrent;
+                maxMP = charInfo.MPMax;
+                currentTP = charInfo.TPCurrent;
+                maxTP = charInfo.TPMax;
+                currentCP = charInfo.CPCurrent;
+                maxCP = charInfo.CPMax;
+                currentGP = charInfo.GPCurrent;
+                maxGP = charInfo.GPMax;
+                job = charInfo.JobID;
+                level = charInfo.Level;
+                x = charInfo.X;
+                y = charInfo.Y;
+                z = charInfo.Z;
+                title = charInfo.Title;
 
-            #region Stats
-            STR = player.Strength;
-            bSTR = player.BaseStrength;
-            DEX = player.Dexterity;
-            bDEX = player.BaseDexterity;
-            VIT = player.Vitality;
-            bVIT = player.BaseVitality;
-            INT = player.Intelligence;
-            bINT = player.BaseIntelligence;
-            MND = player.Mind;
-            bMND = player.BaseMind;
-            PIE = player.Piety;
-            bPIE = player.BasePiety;
-            //TODO
-            statTenacity = player.Tenacity;
-            statDefense = player.Defense;
-            statControl = player.Control;
-            statSpellSpeed = player.SpellSpeed;
-            statSkillSpeed = player.SkillSpeed;
-            statDetermination = player.Determination;
-            statHealingPotency = player.HealingMagicPotency;
-            statAttackPotency = player.AttackMagicPotency;
-            statCritRate = player.CriticalHitRate;
-            statDirectHit = player.DirectHit;
-            statAttackPower = player.AttackPower;
-            statMagicDefense = player.MagicDefense;
-            statEvasion = player.Evasion;
-            statGathering = player.Gathering;
-            statPerception = player.Perception;
-            #endregion
-            #region Resistances
-            resWater = player.WaterResistance;
-            resLightning = player.LightningResistance;
-            resEarth = player.EarthResistance;
-            resWind = player.WindResistance;
-            resIce = player.IceResistance;
-            resFire = player.FireResistance;
-            resBlunt = player.BluntResistance;
-            resPiercing = player.PiercingResistance;
-            resSlashing = player.SlashingResistance;
-            #endregion
-            #region EXP
-            expGLD = player.GLD_CurrentEXP;
-            expPGL = player.PGL_CurrentEXP;
-            expMRD = player.MRD_CurrentEXP;
-            expLNC = player.LNC_CurrentEXP;
-            expARC = player.ARC_CurrentEXP;
-            expROG = player.ROG_CurrentEXP;
-            expCNJ = player.CNJ_CurrentEXP;
-            expTHM = player.THM_CurrentEXP;
-            expACN = player.ACN_CurrentEXP;
-            expCPT = player.CPT_CurrentEXP;
-            expBSM = player.BSM_CurrentEXP;
-            expARM = player.ARM_CurrentEXP;
-            expGSM = player.GSM_CurrentEXP;
-            expLTW = player.LTW_CurrentEXP;
-            expWVR = player.WVR_CurrentEXP;
-            expALC = player.ALC_CurrentEXP;
-            expCUL = player.CUL_CurrentEXP;
-            expMIN = player.MIN_CurrentEXP;
-            expBTN = player.BTN_CurrentEXP;
-            expFSH = player.FSH_CurrentEXP;
-            expDRK = player.DRK_CurrentEXP;
-            expAST = player.AST_CurrentEXP;
-            expMCH = player.MCH_CurrentEXP;
-            expSAM = player.SAM_CurrentEXP;
-            expRDM = player.RDM_CurrentEXP;
-            #endregion
-            #region Levels
-            levelGLD = player.GLD;
-            levelPGL = player.PGL;
-            levelMRD = player.MRD;
-            levelLNC = player.LNC;
-            levelARC = player.ARC;
-            levelROG = player.ROG;
-            levelCNJ = player.CNJ;
-            levelTHM = player.THM;
-            levelACN = player.ACN;
-            levelCPT = player.CPT;
-            levelBSM = player.BSM;
-            levelARM = player.ARM;
-            levelGSM = player.GSM;
-            levelLTW = player.LTW;
-            levelWVR = player.WVR;
-            levelALC = player.ALC;
-            levelCUL = player.CUL;
-            levelMIN = player.MIN;
-            levelBTN = player.BTN;
-            levelFSH = player.FSH;
-            levelDRK = player.DRK;
-            levelAST = player.AST;
-            levelMCH = player.MCH;
-            levelSAM = player.SAM;
-            levelRDM = player.RDM;
-            #endregion
+                #region Stats
+                STR = player.Strength;
+                bSTR = player.BaseStrength;
+                DEX = player.Dexterity;
+                bDEX = player.BaseDexterity;
+                VIT = player.Vitality;
+                bVIT = player.BaseVitality;
+                INT = player.Intelligence;
+                bINT = player.BaseIntelligence;
+                MND = player.Mind;
+                bMND = player.BaseMind;
+                PIE = player.Piety;
+                bPIE = player.BasePiety;
+                //TODO
+                statTenacity = player.Tenacity;
+                statDefense = player.Defense;
+                statControl = player.Control;
+                statSpellSpeed = player.SpellSpeed;
+                statSkillSpeed = player.SkillSpeed;
+                statDetermination = player.Determination;
+                statHealingPotency = player.HealingMagicPotency;
+                statAttackPotency = player.AttackMagicPotency;
+                statCritRate = player.CriticalHitRate;
+                statDirectHit = player.DirectHit;
+                statAttackPower = player.AttackPower;
+                statMagicDefense = player.MagicDefense;
+                statEvasion = player.Evasion;
+                statGathering = player.Gathering;
+                statPerception = player.Perception;
+                #endregion
+                #region Resistances
+                resWater = player.WaterResistance;
+                resLightning = player.LightningResistance;
+                resEarth = player.EarthResistance;
+                resWind = player.WindResistance;
+                resIce = player.IceResistance;
+                resFire = player.FireResistance;
+                resBlunt = player.BluntResistance;
+                resPiercing = player.PiercingResistance;
+                resSlashing = player.SlashingResistance;
+                #endregion
+                #region EXP
+                expGLD = player.GLD_CurrentEXP;
+                expPGL = player.PGL_CurrentEXP;
+                expMRD = player.MRD_CurrentEXP;
+                expLNC = player.LNC_CurrentEXP;
+                expARC = player.ARC_CurrentEXP;
+                expROG = player.ROG_CurrentEXP;
+                expCNJ = player.CNJ_CurrentEXP;
+                expTHM = player.THM_CurrentEXP;
+                expACN = player.ACN_CurrentEXP;
+                expCPT = player.CPT_CurrentEXP;
+                expBSM = player.BSM_CurrentEXP;
+                expARM = player.ARM_CurrentEXP;
+                expGSM = player.GSM_CurrentEXP;
+                expLTW = player.LTW_CurrentEXP;
+                expWVR = player.WVR_CurrentEXP;
+                expALC = player.ALC_CurrentEXP;
+                expCUL = player.CUL_CurrentEXP;
+                expMIN = player.MIN_CurrentEXP;
+                expBTN = player.BTN_CurrentEXP;
+                expFSH = player.FSH_CurrentEXP;
+                expDRK = player.DRK_CurrentEXP;
+                expAST = player.AST_CurrentEXP;
+                expMCH = player.MCH_CurrentEXP;
+                expSAM = player.SAM_CurrentEXP;
+                expRDM = player.RDM_CurrentEXP;
+                #endregion
+                #region Levels
+                levelGLD = player.GLD;
+                levelPGL = player.PGL;
+                levelMRD = player.MRD;
+                levelLNC = player.LNC;
+                levelARC = player.ARC;
+                levelROG = player.ROG;
+                levelCNJ = player.CNJ;
+                levelTHM = player.THM;
+                levelACN = player.ACN;
+                levelCPT = player.CPT;
+                levelBSM = player.BSM;
+                levelARM = player.ARM;
+                levelGSM = player.GSM;
+                levelLTW = player.LTW;
+                levelWVR = player.WVR;
+                levelALC = player.ALC;
+                levelCUL = player.CUL;
+                levelMIN = player.MIN;
+                levelBTN = player.BTN;
+                levelFSH = player.FSH;
+                levelDRK = player.DRK;
+                levelAST = player.AST;
+                levelMCH = player.MCH;
+                levelSAM = player.SAM;
+                levelRDM = player.RDM;
+                #endregion
 
+            }
+            catch (NullReferenceException ex)
+            {
+                infoTimer.Stop();
+                btnConnect.Enabled = true;
+                currentDisplayMode = -1;
+            }
+        }
+
+        private Sharlayan.Core.ActorEntity getPC()
+        {
+            ICollection<Sharlayan.Core.ActorEntity> PlayerInfo = Reader.GetActors()?.PCEntities?.Values;
+            foreach (var k in PlayerInfo)
+            {
+                if (k.Name == Reader.GetPlayerInfo().PlayerEntity.Name)
+                {
+                    return k;
+                }
+            }
+            return null;
         }
 
         private void timerUpdateLCD_Tick(object sender, EventArgs e)
@@ -612,6 +647,7 @@ namespace LogitechLCDFFXIV
                 LogitechLCD.LogiLcdColorSetBackground(mainMap.getMap());
             }
         }
+
         private void timerAnimations_Tick(object sender, EventArgs e)
         {
             isDoingAnimation = false;
