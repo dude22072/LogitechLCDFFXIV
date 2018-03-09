@@ -8,7 +8,7 @@ This applet uses Icehunter's sharlayan.dll to read from the game. If a patch is 
   
 # GameEnginesWrapper
 The wrapper DLL from Logitech's offical c++ SDK.  
-Imported to c# through Logitech.cs  
+Imported to c# through LogitechLCD.cs  
   
 # Building
 Build either x86 or x64 bassed upon your OS and Logitech Driver version, NOT bassed on DX9/DX11 FFXIV.  
