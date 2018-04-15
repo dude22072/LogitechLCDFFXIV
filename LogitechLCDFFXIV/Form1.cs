@@ -184,6 +184,7 @@ namespace LogitechLCDFFXIV
             try
             {
                 Sharlayan.Core.PlayerEntity player = Reader.GetPlayerInfo().PlayerEntity;
+                playerName = player.Name;
                 Sharlayan.Core.ActorEntity charInfo = getPC();
 
                 if (charInfo == null)
